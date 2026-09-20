@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#14141a">
+<title>Ficha D&D</title>
+<style>
+:root{
+  --bg:#14141a; --panel:#1e1e26; --panel2:#26262f; --border:#34343f;
+  --text:#e8e8ec; --muted:#8a8a96; --accent:#c9a227;
+  --hp:#e74c3c; --heal:#27ae60; --slot:#6a5acd;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--font);
+  background:var(--bg);color:var(--text);font-size:16px;line-height:1.4;
+  padding-bottom:80px;overscroll-behavior:none;transition:background .3s,color .3s;
+}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer;touch-action:manipulation}
+input,textarea,select{font-family:inherit}
+
+/* HEADER */
+header{background:linear-gradient(180deg,var(--panel),var(--bg));border-bottom:1px solid var(--border);padding:10px 12px;position:sticky;top:0;z-index:10}
+.char-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.char-info{flex:1;min-width:0}
+.name{font-size:18px;font-weight:700;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.camp-tag{display:inline-block;font-size:10px;color:var(--muted);background:var(--panel2);padding:2px 8px;border-radius:10px;margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.header-btns{display:flex;gap:4px;flex-shrink:0}
+.icon-btn{font-size:20px;padding:6px 9px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);line-height:1}
+.icon-btn:active{background:var(--accent);color:var(--bg)}
+.vitals{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.vital{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:6px 4px;text-align:center}
+.vital .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.vital .big{font-size:20px;font-weight:700}
+#hpBox .big{color:var(--hp)}
+#hpBox .temp{font-size:11px;color:#5dade2}
+.tappable{text-decoration:underline dotted var(--muted);cursor:pointer}
+.hp-controls{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.qbtn{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px 0;font-weight:600;font-size:14px;min-height:40px}
+.qbtn:active{background:var(--accent);color:var(--bg)}
+.qbtn.minus{color:#ff8b7a}
+.qbtn.plus{color:#7fe0a0}
+
+/* TABS */
+nav.tabs{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:9;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding:12px 12px;font-size:13px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--bg)}
+
+/* PANELS */
+main{padding:12px;max-width:900px;margin:0 auto}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+.card-title{font-size:12px;text-transform:uppercase;letter-spacing:.7px;color:var(--accent);margin-bottom:10px;font-weight:700}
+.row-card{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.row-card .card-title{margin:0}
+.muted{color:var(--muted);font-size:13px}
+.section-title{font-size:13px;text-transform:uppercase;letter-spacing:.7px;color:var(--accent);margin:14px 4px 8px;font-weight:700}
+.empty{padding:24px;text-align:center;color:var(--muted);font-size:14px}
+
+/* STATS */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center;cursor:pointer}
+.stat-card:active{background:var(--panel2)}
+.stat-name{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.stat-val{font-size:22px;font-weight:700;margin:2px 0}
+.stat-mod{font-size:15px;color:var(--accent);font-weight:700}
+.stat-save{font-size:11px;color:var(--muted);margin-top:4px;padding-top:4px;border-top:1px dashed var(--border)}
+.stat-save.prof{color:var(--text);font-weight:600}
+
+/* SKILLS */
+.skill-list{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.skill-row{display:grid;grid-template-columns:20px 1fr 40px 44px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--border);font-size:14px;gap:8px;cursor:pointer}
+.skill-row:last-child{border-bottom:none}
+.skill-row:active{background:var(--panel2)}
+.skill-row.prof{background:rgba(39,174,96,.12)}
+.skill-row.expertise{background:rgba(201,162,39,.14)}
+.marker{color:var(--muted);font-size:12px;text-align:center}
+.skill-row.prof .marker{color:#7fe0a0}
+.skill-row.expertise .marker{color:var(--accent)}
+.skill-stat{font-size:10px;color:var(--muted);text-align:right}
+.skill-bonus{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.info-row{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+
+/* COMBAT */
+.death-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.death-col{text-align:center}
+.death-label{font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+.pips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.pip{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:transparent}
+.pip.on{background:var(--hp);border-color:var(--hp)}
+.death-success.on{background:var(--heal);border-color:var(--heal)}
+.pip.slot{border-radius:4px;border-color:var(--slot);width:28px;height:28px}
+.pip.slot.used{background:var(--slot);border-color:var(--slot)}
+.toggle{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-weight:600;min-height:40px}
+.toggle.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.hd-row{display:flex;align-items:center;gap:10px}
+.hd-val{font-weight:700;min-width:100px;text-align:center}
+.cond-grid{display:flex;flex-wrap:wrap;gap:6px}
+.cond{background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;min-height:32px}
+.cond.on{background:rgba(231,76,60,.3);border-color:var(--hp);color:#ffd0c8;font-weight:600}
+.rest-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rest-btn{padding:12px;border-radius:10px;font-weight:700;min-height:48px}
+.rest-btn.short{background:rgba(41,128,185,.25);border:1px solid rgba(41,128,185,.5)}
+.rest-btn.long{background:rgba(142,68,173,.25);border:1px solid rgba(142,68,173,.5)}
+.rest-btn:active{filter:brightness(1.3)}
+
+/* ACCIONES */
+.attack-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px}
+.attack-card:active{background:var(--panel)}
+.attack-name{font-weight:700;margin-bottom:4px}
+.attack-stats{display:flex;gap:12px;font-size:14px;justify-content:space-between;flex-wrap:wrap}
+.attack-bonus{color:var(--accent);font-weight:700}
+.attack-dmg{color:#ff8b7a}
+.attack-notes{font-size:12px;color:var(--muted);margin-top:4px}
+.action-item{padding:10px 0;border-bottom:1px solid var(--border)}
+.action-item:last-child{border-bottom:none}
+.action-name{font-weight:700;color:var(--accent);margin-bottom:2px}
+.action-desc{font-size:13px;color:var(--text);opacity:.85;line-height:1.45}
+
+/* CONJUROS */
+.slot-row{display:grid;grid-template-columns:70px 1fr 50px;align-items:center;gap:8px;padding:6px 0}
+.slot-label{font-size:12px;color:var(--muted);font-weight:600}
+.slot-count{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;font-size:13px}
+.spell-item{padding:10px 0;border-bottom:1px solid var(--border)}
+.spell-item:last-child{border-bottom:none}
+.spell-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.spell-name{font-weight:700;color:var(--accent)}
+.spell-tag{font-size:10px;background:var(--panel2);padding:2px 6px;border-radius:6px;color:var(--muted);text-transform:uppercase}
+.spell-tag.prep{background:rgba(39,174,96,.25);color:var(--heal)}
+.spell-desc{font-size:13px;opacity:.85;line-height:1.45}
+
+/* INVENTARIO */
+.inv-item{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);align-items:start}
+.inv-item:last-child{border-bottom:none}
+.inv-name{font-weight:600}
+.inv-notes{font-size:12px;color:var(--muted);margin-top:2px}
+.inv-qty{background:var(--panel2);padding:2px 8px;border-radius:8px;font-weight:700;font-size:13px;min-width:32px;text-align:center}
+.gold-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.gold-item{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center}
+.gold-label{font-size:10px;color:var(--muted);text-transform:uppercase}
+.gold-val{font-size:16px;font-weight:700;color:var(--accent)}
+
+/* NOTAS / LOG */
+.notes-area{width:100%;min-height:60vh;background:var(--panel);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:12px;font-family:var(--font);font-size:15px;line-height:1.5;resize:vertical}
+.log-list{display:flex;flex-direction:column;gap:6px}
+.log-entry{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;display:flex;gap:8px;align-items:flex-start}
+.log-entry .log-time{color:var(--muted);font-size:11px;flex-shrink:0;min-width:44px;padding-top:2px}
+.log-entry .log-icon{flex-shrink:0;font-size:14px}
+.log-entry .log-text{flex:1;line-height:1.4}
+.log-entry.dmg{border-left:3px solid var(--hp)}
+.log-entry.heal{border-left:3px solid var(--heal)}
+.log-entry.roll{border-left:3px solid var(--accent)}
+.log-entry.info{border-left:3px solid var(--slot)}
+
+/* BESTIARIO */
+.beast-item{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+.beast-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.beast-name{font-weight:700;color:var(--accent);font-size:15px}
+.beast-ac{font-size:12px;color:var(--muted);background:var(--panel2);padding:3px 8px;border-radius:6px}
+.hp-bar{background:var(--panel2);height:26px;border-radius:8px;overflow:hidden;position:relative;margin-bottom:8px;border:1px solid var(--border)}
+.hp-fill{position:absolute;inset:0;width:100%;background:linear-gradient(90deg,var(--hp),#c0392b);transition:width .2s}
+.hp-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;text-shadow:0 1px 2px rgba(0,0,0,.8);color:#fff}
+.beast-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.beast-conds{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.beast-cond{font-size:10px;background:rgba(231,76,60,.3);border:1px solid var(--hp);padding:2px 6px;border-radius:10px;color:#ffd0c8}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal.open{display:flex}
+.modal-content{background:var(--panel);width:100%;max-width:700px;max-height:92vh;border-radius:16px 16px 0 0;padding:16px;overflow-y:auto;color:var(--text)}
+@media(min-width:640px){
+  .modal{align-items:center}
+  .modal-content{border-radius:16px;max-height:85vh}
+}
+.modal-title{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.edit-area{width:100%;min-height:40vh;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.4}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.btn{padding:12px;border-radius:10px;font-weight:700;background:var(--panel2);border:1px solid var(--border);min-height:46px;color:var(--text)}
+.btn:active{filter:brightness(1.3)}
+.btn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.btn.danger{background:rgba(231,76,60,.2);color:#ff9a8a;border-color:var(--hp)}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;letter-spacing:.5px}
+.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:15px}
+
+/* CHAR LIST */
+.char-list,.camp-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:50vh;overflow-y:auto}
+.char-list-item,.camp-list-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left}
+.char-list-item.active,.camp-list-item.active{border-color:var(--accent);background:rgba(201,162,39,.1)}
+.char-list-item:active,.camp-list-item:active{filter:brightness(1.2)}
+.char-list-item .ci-name{font-weight:700;flex:1}
+.char-list-item .ci-sub{font-size:11px;color:var(--muted)}
+.char-list-item .ci-type{font-size:10px;padding:2px 6px;border-radius:6px;background:var(--panel);color:var(--muted);text-transform:uppercase}
+.char-list-item .ci-type.pc{background:rgba(39,174,96,.25);color:var(--heal)}
+.char-list-item .ci-type.npc{background:rgba(231,76,60,.25);color:#ff9a8a}
+.camp-color{width:16px;height:16px;border-radius:50%;flex-shrink:0}
+.camp-list-item .ci-name{font-weight:700;flex:1}
+.camp-list-item .ci-sub{font-size:11px;color:var(--muted)}
+
+/* THEME PICKER */
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:12px}
+.theme-swatch{padding:10px;border-radius:10px;border:2px solid var(--border);cursor:pointer;text-align:center;font-size:11px;font-weight:600}
+.theme-swatch.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(201,162,39,.3)}
+.theme-swatch .swatch-colors{display:flex;height:20px;border-radius:6px;overflow:hidden;margin-bottom:6px}
+.theme-swatch .swatch-colors div{flex:1}
+
+/* DICE */
+.dice-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.die-btn{padding:14px 8px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;font-weight:700;font-size:15px;min-height:52px;color:var(--text)}
+.die-btn:active{background:var(--accent);color:var(--bg)}
+.mod-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.mod-row label{font-size:13px;color:var(--muted);flex-shrink:0}
+.mod-row input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:15px;min-width:0}
+.mode-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px}
+.mode-btn{padding:10px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text)}
+.mode-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.dice-result{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;margin-bottom:12px;min-height:80px;display:flex;flex-direction:column;justify-content:center}
+.dice-result .dr-total{font-size:36px;font-weight:800;color:var(--accent);line-height:1}
+.dice-result .dr-detail{font-size:12px;color:var(--muted);margin-top:6px}
+.dice-result .dr-formula{font-size:11px;color:var(--muted);margin-top:4px;opacity:.7}
+.dice-history{font-size:12px;color:var(--muted);margin-top:8px;max-height:120px;overflow-y:auto}
+.dice-history div{padding:3px 0;border-bottom:1px dashed var(--border)}
+
+/* FAB */
+.fab{position:fixed;right:16px;bottom:20px;width:58px;height:58px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:26px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.5);z-index:50;display:flex;align-items:center;justify-content:center;border:none}
+.fab:active{transform:scale(.94)}
+
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:10px 18px;border-radius:24px;font-weight:700;font-size:14px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="char-head">
+    <div class="char-info">
+      <div id="charName" class="name">—</div>
+      <div id="charSub" class="sub">—</div>
+      <div id="campTag" class="camp-tag">—</div>
+    </div>
+    <div class="header-btns">
+      <button class="icon-btn" data-action="open-campaigns" title="Campañas">🏰</button>
+      <button class="icon-btn" data-action="open-chars" title="Personajes">👥</button>
+      <button class="icon-btn" data-action="open-dice" title="Dados">🎲</button>
+      <button class="icon-btn" data-action="open-edit" title="Editar">⚙</button>
+    </div>
+  </div>
+  <div class="vitals">
+    <div class="vital" id="hpBox">
+      <div class="label">PG</div>
+      <div class="big"><span id="hpCur">0</span>/<span id="hpMax" class="tappable" data-action="edit-max-hp">0</span></div>
+      <div class="temp" id="tempDisplay"></div>
+    </div>
+    <div class="vital"><div class="label">CA</div><div class="big" id="acDisplay">—</div></div>
+    <div class="vital"><div class="label">Inic</div><div class="big" id="initDisplay">—</div></div>
+    <div class="vital"><div class="label">Vel</div><div class="big" id="speedDisplay">—</div></div>
+  </div>
+  <div class="hp-controls">
+    <button class="qbtn minus" data-action="hp" data-delta="-10">−10</button>
+    <button class="qbtn minus" data-action="hp" data-delta="-5">−5</button>
+    <button class="qbtn minus" data-action="hp" data-delta="-1">−1</button>
+    <button class="qbtn plus"  data-action="hp" data-delta="1">+1</button>
+    <button class="qbtn plus"  data-action="hp" data-delta="5">+5</button>
+    <button class="qbtn plus"  data-action="hp" data-delta="10">+10</button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabsNav"></nav>
+
+<main>
+  <section class="panel" id="panel-combate"></section>
+  <section class="panel" id="panel-stats"></section>
+  <section class="panel" id="panel-acciones"></section>
+  <section class="panel" id="panel-conjuros"></section>
+  <section class="panel" id="panel-inv"></section>
+  <section class="panel" id="panel-notas"></section>
+  <section class="panel" id="panel-log"></section>
+  <section class="panel" id="panel-bestia"></section>
+</main>
+
+<button class="fab" data-action="open-dice" title="Tirar dados">🎲</button>
+
+<!-- MODAL: EDITAR PERSONAJE -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <div class="modal-title">Editar personaje <button class="icon-btn" data-action="close-edit">✕</button></div>
+    <div class="section-title" style="margin-top:0">Tema visual</div>
+    <div class="theme-grid" id="themeGrid"></div>
+    <div class="section-title">Tipografía</div>
+    <select id="fontSelect" style="width:100%;padding:10px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;font-size:15px"></select>
+    <div class="section-title">Datos (JSON)</div>
+    <p class="muted" style="font-size:12px;margin:0 0 8px">Edita y pulsa <b>Aplicar</b>. Úsalo también para respaldar.</p>
+    <textarea id="editArea" class="edit-area" spellcheck="false"></textarea>
+    <div class="modal-btns">
+      <button class="btn primary" data-action="apply-json">Aplicar</button>
+      <button class="btn" data-action="download-json">Descargar</button>
+      <button class="btn" data-action="copy-json">Copiar JSON</button>
+      <button class="btn" data-action="import-json">Importar JSON</button>
+      <button class="btn danger" style="grid-column:1/-1" data-action="reset-char">Restaurar ejemplo de este personaje</button>
+    </div>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+  </div>
+</div>
+
+<!-- MODAL: PERSONAJES -->
+<div class="modal" id="charModal">
+  <div class="modal-content">
+    <div class="modal-title">Personajes de la campaña <button class="icon-btn" data-action="close-chars">✕</button></div>
+    <div id="charList" class="char-list"></div>
+    <div class="modal-btns">
+      <button class="btn primary" data-action="new-pc">+ Nuevo PJ</button>
+      <button class="btn" data-action="new-npc">+ Nuevo PNJ</button>
+      <button class="btn" data-action="duplicate-char">Duplicar actual</button>
+      <button class="btn danger" data-action="delete-char">Eliminar actual</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CAMPAÑAS -->
+<div class="modal" id="campModal">
+  <div class="modal-content">
+    <div class="modal-title">Campañas <button class="icon-btn" data-action="close-campaigns">✕</button></div>
+    <div id="campList" class="camp-list"></div>
+    <div class="section-title">Editar campaña activa</div>
+    <div class="field">
+      <label>Nombre</label>
+      <input type="text" id="campNameInput" placeholder="Nombre de la campaña">
+    </div>
+    <div class="field">
+      <label>Tema por defecto</label>
+      <select id="campThemeSelect"></select>
+    </div>
+    <div class="field">
+      <label>Tipografía por defecto</label>
+      <select id="campFontSelect"></select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn primary" data-action="save-campaign">Guardar cambios</button>
+      <button class="btn" data-action="new-campaign">+ Nueva campaña</button>
+      <button class="btn danger" style="grid-column:1/-1" data-action="delete-campaign">Eliminar campaña activa</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DADOS -->
+<div class="modal" id="diceModal">
+  <div class="modal-content">
+    <div class="modal-title">Tirar dados <button class="icon-btn" data-action="close-dice">✕</button></div>
+    <div class="mod-row">
+      <label>Modificador</label>
+      <input type="number" id="diceMod" value="0" inputmode="numeric">
+    </div>
+    <div class="mode-row">
+      <button class="mode-btn active" data-action="dice-mode" data-mode="normal">Normal</button>
+      <button class="mode-btn" data-action="dice-mode" data-mode="adv">Ventaja</button>
+      <button class="mode-btn" data-action="dice-mode" data-mode="dis">Desventaja</button>
+    </div>
+    <div class="dice-grid">
+      <button class="die-btn" data-action="roll-die" data-die="4">d4</button>
+      <button class="die-btn" data-action="roll-die" data-die="6">d6</button>
+      <button class="die-btn" data-action="roll-die" data-die="8">d8</button>
+      <button class="die-btn" data-action="roll-die" data-die="10">d10</button>
+      <button class="die-btn" data-action="roll-die" data-die="12">d12</button>
+      <button class="die-btn" data-action="roll-die" data-die="20">d20</button>
+      <button class="die-btn" data-action="roll-die" data-die="100">d100</button>
+      <button class="die-btn" data-action="roll-die" data-die="20" data-adv="1">d20↵</button>
+    </div>
+    <div class="dice-result" id="diceResult">
+      <div class="dr-total">—</div>
+      <div class="dr-detail">Toca un dado</div>
+    </div>
+    <div class="section-title">Historial reciente</div>
+    <div class="dice-history" id="diceHistory"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   CONSTANTES Y DATOS
+   ============================================================ */
+const STORAGE_KEY = "dnd_app_v3";
+const OLD_KEY_V1 = "dnd_char_v1";
+
+const THEMES = {
+  inherit:   { name:"Auto (campaña)", inherit:true, accent:"#c9a227", bg:"#14141a", panel:"#1e1e26", panel2:"#26262f", border:"#34343f", text:"#e8e8ec", muted:"#8a8a96" },
+  dark:      { name:"Oscuro",    accent:"#c9a227", bg:"#14141a", panel:"#1e1e26", panel2:"#26262f", border:"#34343f", text:"#e8e8ec", muted:"#8a8a96" },
+  forest:    { name:"Bosque",    accent:"#7bc47f", bg:"#0d1a12", panel:"#14261a", panel2:"#1c3324", border:"#2a4a35", text:"#e4ede4", muted:"#7a9980" },
+  ocean:     { name:"Océano",    accent:"#4dc9e6", bg:"#0a1520", panel:"#0f2338", panel2:"#15304a", border:"#1f4462", text:"#e4eef5", muted:"#7a92a5" },
+  royal:     { name:"Realeza",   accent:"#d4af37", bg:"#1a0f2a", panel:"#241438", panel2:"#2e1a48", border:"#3d2458", text:"#ece4f4", muted:"#9080a5" },
+  blood:     { name:"Sangre",    accent:"#e63946", bg:"#1a0808", panel:"#2a0f0f", panel2:"#351414", border:"#4a1f1f", text:"#f2e0e0", muted:"#a58080" },
+  arcane:    { name:"Arcano",    accent:"#b57edc", bg:"#14081a", panel:"#1f0f26", panel2:"#291430", border:"#3d1f48", text:"#ece0f2", muted:"#9080a0" },
+  shadow:    { name:"Sombra",    accent:"#9b8fd4", bg:"#0a0a10", panel:"#141420", panel2:"#1a1a28", border:"#26263a", text:"#d8d8e0", muted:"#6a6a80" },
+  parchment: { name:"Pergamino", accent:"#8b4513", bg:"#efe4c8", panel:"#faf0d8", panel2:"#e8d8b0", border:"#c8b088", text:"#2a1a0a", muted:"#6a5030" }
+};
+
+const FONTS = {
+  system:  { name:"Sistema",  value:'-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif' },
+  serif:   { name:"Serif",    value:'Georgia,"Times New Roman",serif' },
+  mono:    { name:"Mono",     value:'ui-monospace,"SF Mono",Menlo,Consolas,monospace' },
+  fantasy: { name:"Fantasía", value:'"Papyrus","Luminari","Copperplate",fantasy' }
+};
+
+const DEFAULT_CHAR = {
+  meta:{ name:"Aelar Siannodel", class:"Pícaro", level:3, race:"Elfo Silvano", background:"Criminal", alignment:"Caótico Neutral" },
+  combat:{
+    hp:{ current:24, max:24, temp:0 },
+    ac:15, initiativeMisc:0, speed:30,
+    hitDice:{ current:3, max:3, die:"d8" },
+    deathSaves:{ s:0, f:0 }, inspiration:false, exhaustion:0, conditions:[]
+  },
+  stats:{ str:10, dex:17, con:12, int:14, wis:12, cha:10 },
+  profBonus:2,
+  saveProfs:["dex","int"],
+  skillProfs:["acrobatics","stealth","perception","deception","sleightOfHand"],
+  skillExpertise:["stealth","perception"],
+  attacks:[
+    { name:"Daga (cuerpo a cuerpo)", bonus:"+5", damage:"1d4+3 perforante", notes:"Sutil, ligera" },
+    { name:"Daga (arrojadiza)", bonus:"+5", damage:"1d4+3 perforante", notes:"Alcance 20/60" },
+    { name:"Ballesta de mano", bonus:"+5", damage:"1d6+3 perforante", notes:"Recarga, ligera, 30/120" }
+  ],
+  actions:[
+    { name:"Ataque furtivo", desc:"1/turno: +2d6 de daño si tienes ventaja o un aliado a 5 pies del objetivo." },
+    { name:"Esquivar", desc:"Los ataques contra ti tienen desventaja hasta tu próximo turno." },
+    { name:"Dash", desc:"Ganas movimiento extra igual a tu velocidad." },
+    { name:"Disengage", desc:"Tu movimiento no provoca ataques de oportunidad." },
+    { name:"Hide", desc:"Tirada de Sigilo para esconderte." }
+  ],
+  bonusActions:[
+    { name:"Acción astuta", desc:"Dash, Disengage o Hide como acción adicional." },
+    { name:"Ataque con arma ligera", desc:"Si atacas con arma ligera, puedes atacar con otra en la otra mano." }
+  ],
+  reactions:[
+    { name:"Ataque de oportunidad", desc:"Cuando un enemigo sale de tu alcance, atacas con tu reacción." },
+    { name:"Esquiva asombrosa", desc:"Reduce a la mitad el daño de un ataque que te impacte." }
+  ],
+  cantrips:[
+    { name:"Ilusión menor", desc:"Creas un sonido o una imagen ilusoria durante 1 minuto." },
+    { name:"Prestidigitación", desc:"Trucos de magia menores." }
+  ],
+  spells:{
+    slots:{ 1:{max:2,used:0}, 2:{max:0,used:0} },
+    list:[
+      { level:1, name:"Curar heridas", desc:"Recupera 1d8+mod de PG a una criatura que toques.", prepared:true },
+      { level:1, name:"Disfrazarse", desc:"Cambias tu apariencia durante 1 hora.", prepared:true }
+    ]
+  },
+  inventory:[
+    { name:"Daga", qty:2, notes:"1d4 perforante, sutil, ligera" },
+    { name:"Ballesta de mano", qty:1, notes:"1d6 perforante" },
+    { name:"Poción de curación", qty:3, notes:"Recupera 2d4+2 PG" },
+    { name:"Herramientas de ladrón", qty:1, notes:"Competencia" }
+  ],
+  gold:{ pp:0, gp:35, sp:12, cp:8 },
+  notes:"Contactos:\n- Gundren (enano, Neverwinter)\n\nMisión actual:\n-\n\nPistas:\n-"
+};
+
+const NPC_TEMPLATE = {
+  meta:{ name:"PNJ nuevo", class:"Monstruo", level:1, race:"Humanoide", background:"", alignment:"Neutral" },
+  combat:{ hp:{current:7,max:7,temp:0}, ac:13, initiativeMisc:0, speed:30, hitDice:{current:1,max:1,die:"d6"}, deathSaves:{s:0,f:0}, inspiration:false, exhaustion:0, conditions:[] },
+  stats:{ str:10,dex:10,con:10,int:10,wis:10,cha:10 },
+  profBonus:2, saveProfs:[], skillProfs:[], skillExpertise:[],
+  attacks:[{ name:"Ataque", bonus:"+2", damage:"1d6", notes:"" }],
+  actions:[], bonusActions:[], reactions:[], cantrips:[],
+  spells:{ slots:{1:{max:0,used:0},2:{max:0,used:0}}, list:[] },
+  inventory:[], gold:{pp:0,gp:0,sp:0,cp:0}, notes:""
+};
+
+const SKILLS = {
+  acrobatics:{name:"Acrobacias",stat:"dex"},
+  animalHandling:{name:"Trato con animales",stat:"wis"},
+  arcana:{name:"Arcanos",stat:"int"},
+  athletics:{name:"Atletismo",stat:"str"},
+  deception:{name:"Engaño",stat:"cha"},
+  history:{name:"Historia",stat:"int"},
+  insight:{name:"Perspicacia",stat:"wis"},
+  intimidation:{name:"Intimidación",stat:"cha"},
+  investigation:{name:"Investigación",stat:"int"},
+  medicine:{name:"Medicina",stat:"wis"},
+  nature:{name:"Naturaleza",stat:"int"},
+  perception:{name:"Percepción",stat:"wis"},
+  performance:{name:"Interpretación",stat:"cha"},
+  persuasion:{name:"Persuasión",stat:"cha"},
+  religion:{name:"Religión",stat:"int"},
+  sleightOfHand:{name:"Juego de manos",stat:"dex"},
+  stealth:{name:"Sigilo",stat:"dex"},
+  survival:{name:"Supervivencia",stat:"wis"}
+};
+
+const STAT_NAMES = {str:"Fuerza",dex:"Destreza",con:"Constitución",int:"Inteligencia",wis:"Sabiduría",cha:"Carisma"};
+const CONDITIONS = ["Cegado","Hechizado","Ensordecido","Asustado","Agarrado","Incapacitado","Invisible","Paralizado","Petrificado","Envenenado","Derribado","Apresado","Aturdido","Inconsciente"];
+
+const TABS = [
+  {id:"combate", label:"Combate"},
+  {id:"stats", label:"Stats"},
+  {id:"acciones", label:"Acciones"},
+  {id:"conjuros", label:"Conjuros"},
+  {id:"inv", label:"Inv."},
+  {id:"notas", label:"Notas"},
+  {id:"log", label:"Bitácora"},
+  {id:"bestia", label:"Bestiario"}
+];
+
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function deepMerge(t,s){
+  for(const k in s){
+    if(s[k] && typeof s[k]==="object" && !Array.isArray(s[k])) t[k] = deepMerge(t[k]||{}, s[k]);
+    else t[k] = s[k];
+  }
+  return t;
+}
+const mod = n => Math.floor((n-10)/2);
+const fmt = n => (n>=0?"+":"")+n;
+const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtTime = ts => { const d=new Date(ts); return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0"); };
+const nowStr = () => new Date().toLocaleTimeString("es", {hour:"2-digit", minute:"2-digit"});
+
+/* ============================================================
+   BASE DE DATOS
+   ============================================================ */
+let DB = loadDB();
+let C = DB.characters.find(c => c.id === DB.activeId) || DB.characters[0];
+
+function makeCampaign(name){
+  return { id: uid(), name: name || "Nueva campaña", theme: "dark", font: "system" };
+}
+function makePC(){
+  const c = clone(DEFAULT_CHAR);
+  c.id = uid(); c.type = "pc"; c.theme = "inherit"; c.font = "inherit";
+  c.campaignId = DB.activeCampaignId;
+  return c;
+}
+function makeNPC(){
+  const c = clone(NPC_TEMPLATE);
+  c.id = uid(); c.type = "npc"; c.theme = "inherit"; c.font = "inherit";
+  c.campaignId = DB.activeCampaignId;
+  return c;
+}
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const db = JSON.parse(raw);
+      if(db && Array.isArray(db.characters) && db.characters.length){
+        // Migrar estructura de campañas si falta
+        if(!Array.isArray(db.campaigns) || !db.campaigns.length){
+          const camp = makeCampaign("Mi campaña");
+          db.campaigns = [camp];
+          db.activeCampaignId = camp.id;
+          db.characters.forEach(c => { if(!c.campaignId) c.campaignId = camp.id; });
+        }
+        if(!db.activeCampaignId || !db.campaigns.find(x => x.id === db.activeCampaignId)){
+          db.activeCampaignId = db.campaigns[0].id;
+        }
+        db.characters.forEach(c => {
+          if(!c.campaignId) c.campaignId = db.campaigns[0].id;
+          if(!c.theme) c.theme = "inherit";
+          if(!c.font) c.font = "inherit";
+        });
+        return db;
+      }
+    }
+    // Migración desde v1
+    const old = localStorage.getItem(OLD_KEY_V1);
+    if(old){
+      const camp = makeCampaign("Mi campaña");
+      const c = deepMerge(clone(DEFAULT_CHAR), JSON.parse(old));
+      c.id = uid(); c.type = "pc"; c.theme = "inherit"; c.font = "inherit";
+      c.campaignId = camp.id;
+      return { campaigns:[camp], activeCampaignId:camp.id, characters:[c], activeId:c.id, log:[] };
+    }
+  }catch(e){ console.warn(e); }
+  // Fresh install
+  const camp = makeCampaign("Mi campaña");
+  const c = clone(DEFAULT_CHAR);
+  c.id = uid(); c.type = "pc"; c.theme = "inherit"; c.font = "inherit";
+  c.campaignId = camp.id;
+  return { campaigns:[camp], activeCampaignId:camp.id, characters:[c], activeId:c.id, log:[] };
+}
+function save(){
+  try{
+    const i = DB.characters.findIndex(c => c.id === C.id);
+    if(i>=0) DB.characters[i] = C;
+    if(DB.log && DB.log.length > 200) DB.log = DB.log.slice(-200);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+  }catch(e){ console.warn("No se pudo guardar", e); }
+}
+function activeChar(){ return DB.characters.find(c => c.id === DB.activeId) || DB.characters[0]; }
+function activeCampaign(){ return DB.campaigns.find(x => x.id === DB.activeCampaignId) || DB.campaigns[0]; }
+function campaignChars(cid){ return DB.characters.filter(c => c.campaignId === (cid || DB.activeCampaignId)); }
+
+/* ============================================================
+   LOG
+   ============================================================ */
+function addLog(text, type="info", icon=""){
+  const icons = { dmg:"🩸", heal:"💚", roll:"🎲", info:"📜" };
+  DB.log = DB.log || [];
+  DB.log.push({ ts:Date.now(), text, type, icon: icon || icons[type] || "•" });
+  if(DB.log.length > 200) DB.log = DB.log.slice(-200);
+  save();
+  if(document.getElementById("panel-log")?.classList.contains("active")) renderLog();
+}
+
+/* ============================================================
+   DADOS
+   ============================================================ */
+function rollFormula(formula){
+  formula = String(formula).replace(/\s/g,"").toLowerCase();
+  const terms = formula.match(/[+-]?\d*d\d+|[+-]?\d+/g) || [];
+  let total = 0;
+  const parts = [];
+  for(const t of terms){
+    const sign = t.startsWith("-") ? -1 : 1;
+    const clean = t.replace(/^[+-]/,"");
+    if(clean.includes("d")){
+      const [nStr, sStr] = clean.split("d");
+      const n = parseInt(nStr)||1, s = parseInt(sStr)||20;
+      const dice = [];
+      for(let i=0;i<n;i++) dice.push(1 + Math.floor(Math.random()*s));
+      const sum = dice.reduce((a,b)=>a+b,0);
+      total += sum * sign;
+      parts.push(`${sign<0?"−":"+"}${n}d${s}[${dice.join(",")}]`);
+    } else {
+      const v = parseInt(clean)||0;
+      total += v * sign;
+      parts.push(`${sign<0?"−":"+"}${v}`);
+    }
+  }
+  return { total, parts: parts.join(" ").replace(/^\+/,""), formula };
+}
+function rollD20(mode="normal"){
+  const a = 1 + Math.floor(Math.random()*20);
+  if(mode === "normal") return { rolls:[a], chosen:a, detail:"" };
+  const b = 1 + Math.floor(Math.random()*20);
+  const chosen = mode === "adv" ? Math.max(a,b) : Math.min(a,b);
+  return { rolls:[a,b], chosen, detail:`(${a}, ${b})` };
+}
+function showDiceResult(formula, total, detail){
+  const r = document.getElementById("diceResult");
+  r.innerHTML = `<div class="dr-total">${total}</div>
+    <div class="dr-detail">${esc(detail)}</div>
+    <div class="dr-formula">${esc(formula)}</div>`;
+  const hist = document.getElementById("diceHistory");
+  const entry = document.createElement("div");
+  entry.textContent = `${nowStr()} · ${formula} = ${total} ${detail}`;
+  hist.prepend(entry);
+  while(hist.children.length > 8) hist.lastChild.remove();
+}
+function rollAndLog(formula, label){
+  const r = rollFormula(formula);
+  const text = label ? `${label}: ${r.formula} = ${r.total} (${r.parts})` : `${r.formula} = ${r.total}`;
+  addLog(text, "roll");
+  showDiceResult(formula, r.total, r.parts);
+  toast(`🎲 ${r.total}`);
+  return r;
+}
+
+/* ============================================================
+   TEMA
+   ============================================================ */
+function resolveTheme(char){
+  if(!char.theme || char.theme === "inherit"){
+    const camp = DB.campaigns.find(x => x.id === char.campaignId);
+    return camp?.theme || "dark";
+  }
+  return char.theme;
+}
+function resolveFont(char){
+  if(!char.font || char.font === "inherit"){
+    const camp = DB.campaigns.find(x => x.id === char.campaignId);
+    return camp?.font || "system";
+  }
+  return char.font;
+}
+function applyTheme(char){
+  const t = THEMES[resolveTheme(char)] || THEMES.dark;
+  const f = FONTS[resolveFont(char)] || FONTS.system;
+  const r = document.documentElement.style;
+  r.setProperty("--bg", t.bg);
+  r.setProperty("--panel", t.panel);
+  r.setProperty("--panel2", t.panel2);
+  r.setProperty("--border", t.border);
+  r.setProperty("--text", t.text);
+  r.setProperty("--muted", t.muted);
+  r.setProperty("--accent", t.accent);
+  r.setProperty("--font", f.value);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute("content", t.bg);
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function renderTabs(){
+  const nav = document.getElementById("tabsNav");
+  if(!nav.children.length){
+    nav.innerHTML = TABS.map(t => `<button class="tab" data-action="tab" data-tab="${t.id}">${t.label}</button>`).join("");
+  }
+}
+function switchTab(name){
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + name));
+  if(name === "log") renderLog();
+  if(name === "bestia") renderBestia();
+  if(name === "notas") renderNotas();
+}
+
+function renderHeader(){
+  const m = C.meta, c = C.combat;
+  const camp = activeCampaign();
+  document.getElementById("charName").textContent = m.name || "Sin nombre";
+  document.getElementById("charSub").textContent = [m.race, `${m.class} ${m.level}`, m.alignment].filter(Boolean).join(" · ");
+  document.getElementById("campTag").textContent = "🏰 " + (camp ? camp.name : "—");
+  document.getElementById("hpCur").textContent = c.hp.current;
+  document.getElementById("hpMax").textContent = c.hp.max;
+  document.getElementById("tempDisplay").textContent = c.hp.temp > 0 ? `+${c.hp.temp} temp` : "";
+  document.getElementById("acDisplay").textContent = c.ac;
+  document.getElementById("initDisplay").textContent = fmt(mod(C.stats.dex) + (c.initiativeMisc||0));
+  document.getElementById("speedDisplay").textContent = c.speed;
+}
+
+function renderCombat(){
+  const el = document.getElementById("panel-combate");
+  const c = C.combat;
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">Salvaciones de muerte</div>
+      <div class="death-row">
+        <div class="death-col">
+          <div class="death-label">Éxitos</div>
+          <div class="pips">${[0,1,2].map(i=>`<button class="pip death-success ${i<c.deathSaves.s?'on':''}" data-action="death" data-type="s" data-idx="${i}"></button>`).join("")}</div>
+        </div>
+        <div class="death-col">
+          <div class="death-label">Fallos</div>
+          <div class="pips">${[0,1,2].map(i=>`<button class="pip death-fail ${i<c.deathSaves.f?'on':''}" data-action="death" data-type="f" data-idx="${i}"></button>`).join("")}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card row-card">
+      <div class="card-title">Inspiración</div>
+      <button class="toggle ${c.inspiration?'on':''}" data-action="inspiration">${c.inspiration?'★ Sí':'☆ No'}</button>
+    </div>
+
+    <div class="card row-card">
+      <div class="card-title">Dados de golpe (${c.hitDice.die})</div>
+      <div class="hd-row">
+        <button class="qbtn" data-action="hd" data-delta="-1">−</button>
+        <span class="hd-val">${c.hitDice.current}/${c.hitDice.max}</span>
+        <button class="qbtn" data-action="hd" data-delta="1">+</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <button class="btn" style="width:100%" data-action="spend-hd">🎲 Gastar dado de golpe (curar)</button>
+    </div>
+
+    <div class="card row-card">
+      <div class="card-title">Agotamiento</div>
+      <div class="hd-row">
+        <button class="qbtn" data-action="exh" data-delta="-1">−</button>
+        <span class="hd-val">Nivel ${c.exhaustion}</span>
+        <button class="qbtn" data-action="exh" data-delta="1">+</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Condiciones</div>
+      <div class="cond-grid">
+        ${CONDITIONS.map(cd=>`<button class="cond ${c.conditions.includes(cd)?'on':''}" data-action="cond" data-cond="${cd}">${cd}</button>`).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Descansos</div>
+      <div class="rest-row">
+        <button class="rest-btn short" data-action="short-rest">Descanso corto</button>
+        <button class="rest-btn long" data-action="long-rest">Descanso largo</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderStats(){
+  const el = document.getElementById("panel-stats");
+  const s = C.stats;
+  let html = '<div class="grid-3">';
+  for(const k of ["str","dex","con","int","wis","cha"]){
+    const m = mod(s[k]);
+    const isSave = C.saveProfs.includes(k);
+    const saveBonus = m + (isSave ? C.profBonus : 0);
+    html += `<div class="stat-card" data-action="roll" data-formula="1d20${fmt(saveBonus)}" data-label="Salv. ${STAT_NAMES[k]}">
+      <div class="stat-name">${STAT_NAMES[k]}</div>
+      <div class="stat-val">${s[k]}</div>
+      <div class="stat-mod">${fmt(m)}</div>
+      <div class="stat-save ${isSave?'prof':''}">Salv. ${fmt(saveBonus)}</div>
+    </div>`;
+  }
+  html += '</div>';
+
+  html += '<div class="section-title">Habilidades</div><div class="skill-list">';
+  for(const key in SKILLS){
+    const sk = SKILLS[key];
+    const base = mod(s[sk.stat]);
+    const isP = C.skillProfs.includes(key);
+    const isE = C.skillExpertise.includes(key);
+    const b = base + (isP?C.profBonus:0) + (isE?C.profBonus:0);
+    const marker = isE?"◆":(isP?"●":"○");
+    const cls = isE?"expertise":(isP?"prof":"");
+    html += `<div class="skill-row ${cls}" data-action="roll" data-formula="1d20${fmt(b)}" data-label="${sk.name}">
+      <span class="marker">${marker}</span>
+      <span class="skill-name">${sk.name}</span>
+      <span class="skill-stat">${sk.stat.toUpperCase()}</span>
+      <span class="skill-bonus">${fmt(b)}</span>
+    </div>`;
+  }
+  html += '</div>';
+  const perc = 10 + mod(s.wis) + (C.skillProfs.includes("perception")?C.profBonus:0) + (C.skillExpertise.includes("perception")?C.profBonus:0);
+  html += `<div class="info-row">Bono de competencia: <b>+${C.profBonus}</b> · Percepción pasiva: <b>${perc}</b></div>`;
+  el.innerHTML = html;
+}
+
+function renderAcciones(){
+  const el = document.getElementById("panel-acciones");
+  let html = "";
+
+  if(C.attacks.length){
+    html += `<div class="card"><div class="card-title">Ataques</div>`;
+    html += C.attacks.map(a => {
+      const f = `1d20${a.bonus.replace(/\s/g,"")}`;
+      return `<div class="attack-card" data-action="roll" data-formula="${esc(f)}" data-label="Ataque: ${esc(a.name)}">
+        <div class="attack-name">${esc(a.name)}</div>
+        <div class="attack-stats"><span class="attack-bonus">${esc(a.bonus)}</span><span class="attack-dmg">${esc(a.damage)}</span></div>
+        ${a.notes?`<div class="attack-notes">${esc(a.notes)}</div>`:""}
+      </div>`;
+    }).join("");
+    html += `</div>`;
+  }
+
+  const block = (title, items) => items && items.length ? `
+    <div class="card"><div class="card-title">${title}</div>
+      ${items.map(a=>`<div class="action-item"><div class="action-name">${esc(a.name)}</div><div class="action-desc">${esc(a.desc)}</div></div>`).join("")}
+    </div>` : "";
+
+  html += block("Acciones", C.actions);
+  html += block("Acciones adicionales", C.bonusActions);
+  html += block("Reacciones", C.reactions);
+
+  el.innerHTML = html || `<div class="empty">Sin acciones configuradas.</div>`;
+}
+
+function renderConjuros(){
+  const el = document.getElementById("panel-conjuros");
+  let html = "";
+
+  if(C.cantrips.length){
+    html += `<div class="card"><div class="card-title">Trucos</div>`;
+    html += C.cantrips.map(s=>`<div class="spell-item"><div class="spell-head"><span class="spell-name">${esc(s.name)}</span><span class="spell-tag">Truco</span></div><div class="spell-desc">${esc(s.desc)}</div></div>`).join("");
+    html += `</div>`;
+  }
+
+  html += `<div class="card"><div class="card-title">Espacios de conjuro</div>`;
+  let hasSlots = false;
+  for(let lvl=1; lvl<=9; lvl++){
+    const s = C.spells.slots[lvl];
+    if(!s || s.max === 0) continue;
+    hasSlots = true;
+    html += `<div class="slot-row">
+      <div class="slot-label">Nivel ${lvl}</div>
+      <div class="pips">${Array.from({length:s.max},(_,i)=>`<button class="pip slot ${i<s.used?'used':''}" data-action="slot" data-level="${lvl}" data-idx="${i}"></button>`).join("")}</div>
+      <div class="slot-count">${s.max-s.used}/${s.max}</div>
+    </div>`;
+  }
+  if(!hasSlots) html += `<div class="muted">Sin espacios configurados.</div>`;
+  html += `</div>`;
+
+  const byLevel = {};
+  (C.spells.list||[]).forEach(s => { (byLevel[s.level] = byLevel[s.level] || []).push(s); });
+  for(const lvl of Object.keys(byLevel).sort((a,b)=>a-b)){
+    html += `<div class="card"><div class="card-title">Nivel ${lvl}</div>`;
+    html += byLevel[lvl].map(s => `<div class="spell-item">
+      <div class="spell-head"><span class="spell-name">${esc(s.name)}</span>${s.prepared?'<span class="spell-tag prep">Prep</span>':""}</div>
+      <div class="spell-desc">${esc(s.desc)}</div>
+    </div>`).join("");
+    html += `</div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+function renderInv(){
+  const el = document.getElementById("panel-inv");
+  let html = `<div class="card"><div class="card-title">Oro</div><div class="gold-row">
+    <div class="gold-item"><div class="gold-label">PP</div><div class="gold-val">${C.gold.pp}</div></div>
+    <div class="gold-item"><div class="gold-label">PO</div><div class="gold-val">${C.gold.gp}</div></div>
+    <div class="gold-item"><div class="gold-label">PL</div><div class="gold-val">${C.gold.sp}</div></div>
+    <div class="gold-item"><div class="gold-label">PC</div><div class="gold-val">${C.gold.cp}</div></div>
+  </div></div>`;
+
+  html += `<div class="card"><div class="card-title">Equipo</div>`;
+  if(C.inventory.length){
+    html += C.inventory.map(i => `<div class="inv-item"><div><div class="inv-name">${esc(i.name)}</div>${i.notes?`<div class="inv-notes">${esc(i.notes)}</div>`:""}</div><div class="inv-qty">${i.qty}</div></div>`).join("");
+  } else {
+    html += `<div class="muted">Sin objetos.</div>`;
+  }
+  html += `</div>`;
+
+  el.innerHTML = html;
+}
+
+function renderNotas(){
+  const el = document.getElementById("panel-notas");
+  if(!el.dataset.init){
+    el.innerHTML = `<textarea id="notesArea" class="notes-area" placeholder="Notas de campaña..."></textarea>`;
+    el.dataset.init = "1";
+  }
+  const ta = document.getElementById("notesArea");
+  if(document.activeElement !== ta) ta.value = C.notes || "";
+}
+
+function renderLog(){
+  const el = document.getElementById("panel-log");
+  const log = (DB.log || []).slice().reverse();
+  if(!log.length){
+    el.innerHTML = `<div class="empty">Sin eventos aún.<br><span class="muted">Aquí se registran daños, curaciones, tiradas, descansos…</span></div>
+      <button class="btn" style="width:100%" data-action="clear-log">🗑 Limpiar bitácora</button>`;
+    return;
+  }
+  el.innerHTML = `<div class="log-list">${log.map(e => `
+    <div class="log-entry ${e.type}">
+      <span class="log-time">${fmtTime(e.ts)}</span>
+      <span class="log-icon">${e.icon||""}</span>
+      <span class="log-text">${esc(e.text)}</span>
+    </div>`).join("")}</div>
+    <button class="btn" style="width:100%;margin-top:10px" data-action="clear-log">🗑 Limpiar bitácora</button>`;
+}
+
+function renderBestia(){
+  const el = document.getElementById("panel-bestia");
+  const npcs = campaignChars().filter(c => c.type === "npc");
+  if(!npcs.length){
+    el.innerHTML = `<div class="empty">Sin PNJs en esta campaña.<br><span class="muted">Toca 👥 y pulsa <b>+ Nuevo PNJ</b>.</span></div>`;
+    return;
+  }
+  el.innerHTML = npcs.map(n => {
+    const pct = n.combat.hp.max ? (n.combat.hp.current / n.combat.hp.max * 100) : 0;
+    const conds = n.combat.conditions || [];
+    return `<div class="beast-item">
+      <div class="beast-head">
+        <span class="beast-name">${esc(n.meta.name)}</span>
+        <span class="beast-ac">CA ${n.combat.ac} · Ini ${fmt(mod(n.stats.dex)+(n.combat.initiativeMisc||0))}</span>
+      </div>
+      <div class="hp-bar">
+        <div class="hp-fill" style="width:${pct}%"></div>
+        <div class="hp-text">${n.combat.hp.current}/${n.combat.hp.max}${n.combat.hp.temp>0?` (+${n.combat.hp.temp})`:""}</div>
+      </div>
+      <div class="beast-controls">
+        <button class="qbtn minus" data-action="npc-hp" data-id="${n.id}" data-delta="-5">−5</button>
+        <button class="qbtn minus" data-action="npc-hp" data-id="${n.id}" data-delta="-1">−1</button>
+        <button class="qbtn plus" data-action="npc-hp" data-id="${n.id}" data-delta="1">+1</button>
+        <button class="qbtn plus" data-action="npc-hp" data-id="${n.id}" data-delta="5">+5</button>
+      </div>
+      ${conds.length?`<div class="beast-conds">${conds.map(c=>`<span class="beast-cond">${esc(c)}</span>`).join("")}</div>`:""}
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn" style="flex:1;min-height:36px;padding:6px;font-size:12px" data-action="switch-to" data-id="${n.id}">Editar ficha</button>
+        <button class="btn" style="flex:1;min-height:36px;padding:6px;font-size:12px" data-action="npc-roll-init" data-id="${n.id}">Tirar iniciativa</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function renderAll(){
+  applyTheme(C);
+  renderHeader();
+  renderCombat();
+  renderStats();
+  renderAcciones();
+  renderConjuros();
+  renderInv();
+  renderNotas();
+  if(document.getElementById("panel-log").classList.contains("active")) renderLog();
+  if(document.getElementById("panel-bestia").classList.contains("active")) renderBestia();
+}
+
+/* ============================================================
+   ACCIONES DE COMBATE
+   ============================================================ */
+function applyHP(delta, opts={}){
+  const c = C.combat;
+  const before = c.hp.current;
+  let temp = c.hp.temp;
+  if(delta < 0){
+    let dmg = -delta;
+    if(temp > 0){
+      const abs = Math.min(temp, dmg);
+      temp -= abs; dmg -= abs;
+    }
+    c.hp.current = Math.max(0, c.hp.current - dmg);
+  } else {
+    c.hp.current = Math.min(c.hp.max, c.hp.current + delta);
+  }
+  c.hp.temp = temp;
+  save(); renderHeader(); renderCombat();
+  if(!opts.silent){
+    if(delta < 0) addLog(`${C.meta.name}: ${before} → ${c.hp.current} PG (${delta})`, "dmg");
+    else addLog(`${C.meta.name}: ${before} → ${c.hp.current} PG (+${delta})`, "heal");
+  }
+}
+function toggleDeath(type, idx){
+  const d = C.combat.deathSaves;
+  if(type === "s") d.s = (idx < d.s) ? idx : idx + 1;
+  else d.f = (idx < d.f) ? idx : idx + 1;
+  save(); renderCombat();
+}
+function toggleCondition(name){
+  const arr = C.combat.conditions;
+  const i = arr.indexOf(name);
+  if(i >= 0){ arr.splice(i,1); addLog(`${C.meta.name} ya no está ${name}`, "info"); }
+  else { arr.push(name); addLog(`${C.meta.name} está ${name}`, "info"); }
+  save(); renderCombat();
+}
+function toggleSlot(level, idx){
+  const s = C.spells.slots[level];
+  if(!s) return;
+  s.used = (idx < s.used) ? idx : idx + 1;
+  save(); renderConjuros();
+}
+function changeHD(d){
+  const hd = C.combat.hitDice;
+  hd.current = Math.max(0, Math.min(hd.max, hd.current + d));
+  save(); renderCombat();
+}
+function spendHD(){
+  const hd = C.combat.hitDice;
+  if(hd.current <= 0){ toast("Sin dados de golpe"); return; }
+  const sides = parseInt(hd.die.replace("d","")) || 8;
+  const roll = Math.floor(Math.random() * sides) + 1;
+  const conM = mod(C.stats.con);
+  const heal = Math.max(1, roll + conM);
+  hd.current--;
+  C.combat.hp.current = Math.min(C.combat.hp.max, C.combat.hp.current + heal);
+  save(); renderAll();
+  addLog(`Dado de golpe: ${roll} ${fmt(conM)} = ${heal} PG curados`, "heal");
+  toast(`💚 +${heal} PG`);
+}
+function changeExh(d){
+  C.combat.exhaustion = Math.max(0, Math.min(6, C.combat.exhaustion + d));
+  save(); renderCombat();
+}
+function shortRest(){
+  addLog(`${C.meta.name}: descanso corto`, "info");
+  toast("Descanso corto ☕");
+}
+function longRest(){
+  const c = C.combat;
+  c.hp.current = c.hp.max;
+  c.hp.temp = 0;
+  c.deathSaves = { s:0, f:0 };
+  c.exhaustion = Math.max(0, c.exhaustion - 1);
+  c.hitDice.current = Math.min(c.hitDice.max, c.hitDice.current + Math.ceil(c.hitDice.max/2));
+  for(const lvl in C.spells.slots) C.spells.slots[lvl].used = 0;
+  save(); renderAll();
+  addLog(`${C.meta.name}: descanso largo — PG y espacios restaurados`, "heal");
+  toast("✨ Descanso largo completo");
+}
+
+/* ============================================================
+   CAMPAÑAS
+   ============================================================ */
+function openCamps(){
+  renderCampList();
+  renderCampEditor();
+  document.getElementById("campModal").classList.add("open");
+}
+function closeCamps(){ document.getElementById("campModal").classList.remove("open"); }
+
+function renderCampList(){
+  const el = document.getElementById("campList");
+  el.innerHTML = DB.campaigns.map(c => {
+    const count = DB.characters.filter(x => x.campaignId === c.id).length;
+    const theme = THEMES[c.theme] || THEMES.dark;
+    return `<button class="camp-list-item ${c.id===DB.activeCampaignId?'active':''}" data-action="switch-camp" data-id="${c.id}">
+      <span class="camp-color" style="background:${theme.accent}"></span>
+      <div style="flex:1;text-align:left">
+        <div class="ci-name">${esc(c.name)}</div>
+        <div class="ci-sub">${count} personaje${count===1?"":"s"} · tema ${theme.name}</div>
+      </div>
+    </button>`;
+  }).join("");
+}
+
+function renderCampEditor(){
+  const camp = activeCampaign();
+  if(!camp) return;
+  document.getElementById("campNameInput").value = camp.name;
+  const themeSel = document.getElementById("campThemeSelect");
+  themeSel.innerHTML = Object.entries(THEMES).filter(([k])=>k!=="inherit")
+    .map(([k,t]) => `<option value="${k}" ${camp.theme===k?'selected':''}>${t.name}</option>`).join("");
+  const fontSel = document.getElementById("campFontSelect");
+  fontSel.innerHTML = Object.entries(FONTS)
+    .map(([k,f]) => `<option value="${k}" ${camp.font===k?'selected':''}>${f.name}</option>`).join("");
+}
+
+function switchCampaign(id){
+  if(id === DB.activeCampaignId){ closeCamps(); return; }
+  save();
+  DB.activeCampaignId = id;
+  // Buscar personaje activo dentro de la nueva campaña
+  const chars = campaignChars(id);
+  if(!chars.find(c => c.id === DB.activeId)){
+    if(chars.length) DB.activeId = chars[0].id;
+    else {
+      // No hay personajes: crear uno automáticamente
+      const pc = makePC();
+      DB.characters.push(pc);
+      DB.activeId = pc.id;
+    }
+  }
+  C = activeChar();
+  save();
+  renderAll();
+  closeCamps();
+  toast(`🏰 ${activeCampaign().name}`);
+}
+
+function saveCampaign(){
+  const camp = activeCampaign();
+  if(!camp) return;
+  const name = document.getElementById("campNameInput").value.trim();
+  if(!name){ alert("La campaña necesita un nombre."); return; }
+  camp.name = name;
+  camp.theme = document.getElementById("campThemeSelect").value;
+  camp.font = document.getElementById("campFontSelect").value;
+  save();
+  renderAll();
+  renderCampList();
+  toast("Campaña guardada ✓");
+}
+
+function newCampaign(){
+  save();
+  const camp = makeCampaign("Nueva campaña " + (DB.campaigns.length + 1));
+  DB.campaigns.push(camp);
+  DB.activeCampaignId = camp.id;
+  const pc = makePC();
+  DB.characters.push(pc);
+  DB.activeId = pc.id;
+  C = pc;
+  save();
+  renderAll();
+  renderCampList();
+  renderCampEditor();
+  toast(`🏰 ${camp.name}`);
+}
+
+function deleteCampaign(){
+  if(DB.campaigns.length <= 1){
+    alert("Debe quedar al menos una campaña.");
+    return;
+  }
+  const camp = activeCampaign();
+  const count = DB.characters.filter(c => c.campaignId === camp.id).length;
+  if(!confirm(`¿Eliminar la campaña "${camp.name}"? Se borrarán también sus ${count} personaje(s).`)) return;
+  // Eliminar personajes de la campaña
+  DB.characters = DB.characters.filter(c => c.campaignId !== camp.id);
+  DB.campaigns = DB.campaigns.filter(c => c.id !== camp.id);
+  DB.activeCampaignId = DB.campaigns[0].id;
+  const chars = campaignChars();
+  if(chars.length) DB.activeId = chars[0].id;
+  C = activeChar();
+  save(); renderAll(); renderCampList(); renderCampEditor();
+  toast("Campaña eliminada");
+}
+
+/* ============================================================
+   PERSONAJES
+   ============================================================ */
+function openChars(){
+  renderCharList();
+  document.getElementById("charModal").classList.add("open");
+}
+function closeChars(){ document.getElementById("charModal").classList.remove("open"); }
+
+function renderCharList(){
+  const el = document.getElementById("charList");
+  const list = campaignChars();
+  const pcs = list.filter(c => c.type === "pc");
+  const npcs = list.filter(c => c.type === "npc");
+  const row = c => `<button class="char-list-item ${c.id===C.id?'active':''}" data-action="switch-to" data-id="${c.id}">
+    <span class="ci-type ${c.type}">${c.type.toUpperCase()}</span>
+    <div style="flex:1;text-align:left">
+      <div class="ci-name">${esc(c.meta.name)}</div>
+      <div class="ci-sub">${esc(c.meta.class)} · Nv ${c.meta.level} · ${c.combat.hp.current}/${c.combat.hp.max} PG</div>
+    </div>
+  </button>`;
+
+  let html = "";
+  if(pcs.length){
+    html += `<div class="section-title" style="margin-top:0">Personajes jugadores</div>`;
+    html += pcs.map(row).join("");
+  }
+  if(npcs.length){
+    html += `<div class="section-title">PNJs / Monstruos</div>`;
+    html += npcs.map(row).join("");
+  }
+  if(!list.length) html = `<div class="empty">Sin personajes en esta campaña.</div>`;
+  el.innerHTML = html;
+}
+
+function switchTo(id){
+  if(id === C.id){ closeChars(); return; }
+  save();
+  DB.activeId = id;
+  C = activeChar();
+  save();
+  renderAll();
+  closeChars();
+  closeEdit();
+  toast(`▶ ${C.meta.name}`);
+}
+
+function newChar(type){
+  save();
+  const c = type === "npc" ? makeNPC() : makePC();
+  if(type === "pc") c.meta.name = "Nuevo PJ";
+  DB.characters.push(c);
+  DB.activeId = c.id;
+  C = c;
+  save();
+  renderAll();
+  closeChars();
+  toast(`+ ${c.meta.name}`);
+  setTimeout(openEdit, 250);
+}
+
+function duplicateChar(){
+  save();
+  const copy = clone(C);
+  copy.id = uid();
+  copy.meta.name = (C.meta.name || "Personaje") + " (copia)";
+  copy.campaignId = DB.activeCampaignId;
+  DB.characters.push(copy);
+  DB.activeId = copy.id;
+  C = copy;
+  save(); renderAll(); closeChars();
+  toast("Duplicado ✓");
+}
+
+function deleteChar(){
+  const list = campaignChars();
+  if(list.length <= 1){ alert("Debe quedar al menos un personaje en la campaña."); return; }
+  if(!confirm(`¿Eliminar a "${C.meta.name}"?`)) return;
+  const i = DB.characters.findIndex(c => c.id === C.id);
+  DB.characters.splice(i,1);
+  const remaining = campaignChars();
+  DB.activeId = remaining[0].id;
+  C = activeChar();
+  save(); renderAll(); closeChars();
+  toast("Eliminado");
+}
+
+/* ============================================================
+   EDITOR
+   ============================================================ */
+function openEdit(){
+  renderThemePicker();
+  renderFontSelect();
+  document.getElementById("editArea").value = JSON.stringify(C, null, 2);
+  document.getElementById("editModal").classList.add("open");
+}
+function closeEdit(){ document.getElementById("editModal").classList.remove("open"); }
+
+function renderThemePicker(){
+  const grid = document.getElementById("themeGrid");
+  grid.innerHTML = Object.entries(THEMES).map(([key,t]) => `
+    <button class="theme-swatch ${C.theme===key?'active':''}" data-action="set-theme" data-theme="${key}">
+      <div class="swatch-colors" style="background:${t.bg}">
+        <div style="background:${t.panel}"></div>
+        <div style="background:${t.accent}"></div>
+        <div style="background:${t.panel2}"></div>
+      </div>
+      ${t.name}
+    </button>`).join("");
+}
+
+function renderFontSelect(){
+  const sel = document.getElementById("fontSelect");
+  const opts = [["inherit","Auto (campaña)"], ...Object.entries(FONTS).map(([k,f]) => [k, f.name])];
+  sel.innerHTML = opts.map(([k,n]) => `<option value="${k}" ${C.font===k?'selected':''}>${n}</option>`).join("");
+  sel.style.fontFamily = (FONTS[resolveFont(C)]||FONTS.system).value;
+}
+
+function applyJSON(){
+  try{
+    const parsed = JSON.parse(document.getElementById("editArea").value);
+    const id = C.id, type = C.type, theme = C.theme, font = C.font, campaignId = C.campaignId;
+    C = deepMerge(clone(type === "npc" ? NPC_TEMPLATE : DEFAULT_CHAR), parsed);
+    C.id = id; C.type = type; C.theme = theme; C.font = font; C.campaignId = campaignId;
+    const i = DB.characters.findIndex(c => c.id === id);
+    if(i >= 0) DB.characters[i] = C;
+    save(); renderAll(); closeEdit();
+    toast("Datos actualizados ✓");
+  }catch(e){
+    alert("JSON inválido:\n" + e.message);
+  }
+}
+
+function copyJSON(){
+  const ta = document.getElementById("editArea");
+  ta.select();
+  try{ document.execCommand("copy"); toast("Copiado ✓"); }
+  catch(e){ navigator.clipboard?.writeText(ta.value).then(()=>toast("Copiado ✓")); }
+}
+
+function downloadJSON(){
+  const blob = new Blob([JSON.stringify(C, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = (C.meta.name || "personaje").replace(/\s+/g,"_") + ".json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(){ document.getElementById("importFile").click(); }
+
+function resetChar(){
+  if(!confirm("¿Restaurar este personaje al ejemplo? Se perderán los cambios.")) return;
+  const id = C.id, type = C.type, theme = C.theme, font = C.font, campaignId = C.campaignId;
+  C = type === "npc" ? clone(NPC_TEMPLATE) : clone(DEFAULT_CHAR);
+  C.id = id; C.type = type; C.theme = theme; C.font = font; C.campaignId = campaignId;
+  const i = DB.characters.findIndex(c => c.id === id);
+  if(i >= 0) DB.characters[i] = C;
+  save(); renderAll(); closeEdit();
+  toast("Restaurado");
+}
+
+function clearLog(){
+  if(!confirm("¿Borrar toda la bitácora?")) return;
+  DB.log = [];
+  save(); renderLog();
+  toast("Bitácora limpia");
+}
+
+/* ============================================================
+   EVENTOS
+   ============================================================ */
+document.body.addEventListener("click", e => {
+  const t = e.target.closest("[data-action]");
+  if(!t) return;
+  const a = t.dataset.action;
+  switch(a){
+    case "tab": switchTab(t.dataset.tab); break;
+    case "hp": applyHP(parseInt(t.dataset.delta)); break;
+    case "edit-max-hp": {
+      const v = prompt("PG máximos:", C.combat.hp.max);
+      if(v !== null){
+        const n = parseInt(v);
+        if(!isNaN(n) && n > 0){
+          C.combat.hp.max = n;
+          if(C.combat.hp.current > n) C.combat.hp.current = n;
+          save(); renderHeader();
+        }
+      }
+      break;
+    }
+    case "death": toggleDeath(t.dataset.type, parseInt(t.dataset.idx)); break;
+    case "inspiration": C.combat.inspiration = !C.combat.inspiration; save(); renderCombat(); break;
+    case "hd": changeHD(parseInt(t.dataset.delta)); break;
+    case "spend-hd": spendHD(); break;
+    case "exh": changeExh(parseInt(t.dataset.delta)); break;
+    case "cond": toggleCondition(t.dataset.cond); break;
+    case "short-rest": shortRest(); break;
+    case "long-rest": longRest(); break;
+    case "slot": toggleSlot(parseInt(t.dataset.level), parseInt(t.dataset.idx)); break;
+    case "roll": rollAndLog(t.dataset.formula, t.dataset.label || ""); break;
+
+    case "open-edit": openEdit(); break;
+    case "close-edit": closeEdit(); break;
+    case "apply-json": applyJSON(); break;
+    case "copy-json": copyJSON(); break;
+    case "download-json": downloadJSON(); break;
+    case "import-json": importJSON(); break;
+    case "reset-char": resetChar(); break;
+    case "set-theme": C.theme = t.dataset.theme; save(); applyTheme(C); renderThemePicker(); break;
+
+    case "open-chars": openChars(); break;
+    case "close-chars": closeChars(); break;
+    case "new-pc": newChar("pc"); break;
+    case "new-npc": newChar("npc"); break;
+    case "duplicate-char": duplicateChar(); break;
+    case "delete-char": deleteChar(); break;
+    case "switch-to": switchTo(t.dataset.id); break;
+
+    case "open-campaigns": openCamps(); break;
+    case "close-campaigns": closeCamps(); break;
+    case "switch-camp": switchCampaign(t.dataset.id); break;
+    case "save-campaign": saveCampaign(); break;
+    case "new-campaign": newCampaign(); break;
+    case "delete-campaign": deleteCampaign(); break;
+
+    case "open-dice": document.getElementById("diceModal").classList.add("open"); break;
+    case "close-dice": document.getElementById("diceModal").classList.remove("open"); break;
+    case "dice-mode":
+      document.querySelectorAll(".mode-btn").forEach(b => b.classList.toggle("active", b === t));
+      break;
+    case "roll-die": {
+      const die = parseInt(t.dataset.die);
+      const adv = t.dataset.adv === "1";
+      const modVal = parseInt(document.getElementById("diceMod").value) || 0;
+      const modeBtn = document.querySelector(".mode-btn.active");
+      const mode = adv ? "adv" : (modeBtn ? modeBtn.dataset.mode : "normal");
+      let total, detail, formula;
+      if(die === 20){
+        const r = rollD20(mode);
+        total = r.chosen + modVal;
+        detail = r.detail ? `${r.detail} ${modVal>=0?'+':''}${modVal}` : `${r.chosen}${modVal?` ${modVal>=0?'+':''}${modVal}`:""}`;
+        formula = `1d20${mode==="adv"?" (ventaja)":mode==="dis"?" (desventaja)":""}${fmt(modVal)}`;
+      } else {
+        const r = rollFormula(`1d${die}${fmt(modVal)}`);
+        total = r.total;
+        detail = r.parts;
+        formula = `1d${die}${fmt(modVal)}`;
+      }
+      showDiceResult(formula, total, detail);
+      addLog(`${formula} = ${total}`, "roll");
+      toast(`🎲 ${total}`);
+      break;
+    }
+
+    case "clear-log": clearLog(); break;
+
+    case "npc-hp": {
+      const id = t.dataset.id;
+      const delta = parseInt(t.dataset.delta);
+      const n = DB.characters.find(c => c.id === id);
+      if(!n) return;
+      const before = n.combat.hp.current;
+      n.combat.hp.current = Math.max(0, Math.min(n.combat.hp.max, n.combat.hp.current + delta));
+      save(); renderBestia();
+      addLog(`${n.meta.name}: ${before} → ${n.combat.hp.current} PG (${delta>=0?'+':''}${delta})`, delta < 0 ? "dmg" : "heal");
+      break;
+    }
+    case "npc-roll-init": {
+      const n = DB.characters.find(c => c.id === t.dataset.id);
+      if(!n) return;
+      const r = rollFormula(`1d20${fmt(mod(n.stats.dex)+(n.combat.initiativeMisc||0))}`);
+      toast(`Ini ${n.meta.name}: ${r.total}`);
+      addLog(`Iniciativa ${n.meta.name}: ${r.total}`, "roll");
+      break;
+    }
+  }
+});
+
+document.body.addEventListener("input", e => {
+  if(e.target.id === "notesArea"){ C.notes = e.target.value; save(); }
+});
+
+document.querySelectorAll(".modal").forEach(m => {
+  m.addEventListener("click", e => { if(e.target === m) m.classList.remove("open"); });
+});
+
+document.getElementById("fontSelect").addEventListener("change", e => {
+  C.font = e.target.value;
+  save(); applyTheme(C); renderFontSelect();
+});
+
+document.getElementById("importFile").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try{
+      const parsed = JSON.parse(ev.target.result);
+      if(parsed.meta && parsed.combat){
+        const c = deepMerge(clone(parsed.type === "npc" ? NPC_TEMPLATE : DEFAULT_CHAR), parsed);
+        c.id = uid();
+        c.type = c.type || "pc";
+        c.theme = c.theme || "inherit";
+        c.font = c.font || "inherit";
+        c.campaignId = DB.activeCampaignId;
+        DB.characters.push(c);
+        DB.activeId = c.id;
+        C = c;
+        save(); renderAll(); closeEdit();
+        toast(`Importado: ${c.meta.name}`);
+      } else if(parsed.characters){
+        if(confirm("El archivo es una copia completa. ¿Reemplazar TODOS los datos actuales?")){
+          DB = parsed;
+          if(!DB.campaigns || !DB.campaigns.length){
+            const camp = makeCampaign("Mi campaña");
+            DB.campaigns = [camp]; DB.activeCampaignId = camp.id;
+            DB.characters.forEach(c => c.campaignId = camp.id);
+          }
+          C = activeChar();
+          save(); renderAll(); closeEdit();
+          toast("Respaldo restaurado ✓");
+        }
+      }
+    }catch(err){
+      alert("Archivo JSON inválido:\n" + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+document.addEventListener("keydown", e => {
+  if(e.target.matches("input,textarea")) return;
+  if(e.key === "Escape"){
+    document.querySelectorAll(".modal.open").forEach(m => m.classList.remove("open"));
+  }
+  if(e.key === "d" && !e.metaKey && !e.ctrlKey){
+    document.getElementById("diceModal").classList.toggle("open");
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(function init(){
+  if(!DB.characters.length){
+    const pc = makePC();
+    DB.characters = [pc];
+    DB.activeId = pc.id;
+  }
+  if(!DB.characters.find(c => c.id === DB.activeId)){
+    DB.activeId = campaignChars()[0]?.id || DB.characters[0].id;
+  }
+  C = activeChar();
+  renderTabs();
+  renderAll();
+  switchTab("combate");
+})();
+</script>
+</body>
+</html>
