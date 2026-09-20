@@ -73,6 +73,7 @@ header{
 .icon-btn:active{transform:scale(.92);background:rgba(232,185,58,.25)}
 
 /* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1500px;margin:0 auto;min-height:calc(100vh - 50px)}
 @media(min-width:900px){
   .layout{
     grid-template-columns: var(--left-w, 300px) 1fr var(--right-w, 320px);
@@ -81,6 +82,8 @@ header{
   }
   .layout.hide-left{ --left-w: 0px; }
   .layout.hide-right{ --right-w: 0px; }
+  .layout.left-compact{ --left-w: 64px; }
+  .layout.right-compact{ --right-w: 64px; }
   .layout.hide-left #leftPanel,
   .layout.hide-right #rightPanel{ display:none; }
 }
@@ -100,8 +103,54 @@ aside{
   aside.closed{pointer-events:none}
 }
 @media(min-width:900px){
-  aside{position:sticky;top:64px;max-height:calc(100vh - 74px);overflow-y:auto}
+  aside{position:sticky;top:64px;max-height:calc(100vh - 74px);overflow-y:auto;transition:width .25s ease}
 }
+
+/* --- Modo compacto (escritorio) --- */
+@media(min-width:900px){
+  aside.compact{
+    width:64px !important;
+    min-width:64px;
+    overflow:hidden;
+  }
+  aside.compact .side-title{font-size:0}
+  aside.compact .side-title::before{content:"•";font-size:18px;color:var(--accent)}
+  aside.compact .side-head{justify-content:center;padding:12px 6px}
+  aside.compact .side-close{display:none}
+
+  /* Left compacto */
+  aside.compact #leftContent .section{padding:6px 4px}
+  aside.compact #leftContent .section-title{display:none}
+  aside.compact #leftContent .stats-grid{grid-template-columns:1fr;gap:4px}
+  aside.compact #leftContent .stat{padding:5px 2px}
+  aside.compact #leftContent .stat .k{font-size:7px;letter-spacing:0}
+  aside.compact #leftContent .stat .v{font-size:15px;margin:1px 0}
+  aside.compact #leftContent .stat .m{font-size:10px}
+  aside.compact #leftContent .skill,
+  aside.compact #leftContent .section:last-child{display:none}
+
+  /* Right compacto */
+  aside.compact #rightContent .menu-sub{
+    font-size:0;padding:10px 4px 4px;text-align:center;
+    background:transparent;border-top:1px solid var(--border-soft);
+  }
+  aside.compact #rightContent .menu-sub::before{
+    content:"•";font-size:14px;color:var(--accent);
+  }
+  aside.compact #rightContent .menu-item{justify-content:center;padding:9px 4px}
+  aside.compact #rightContent .menu-item .mi-name,
+  aside.compact #rightContent .menu-item .mi-formula{display:none}
+  aside.compact #rightContent .menu-item .mi-dot{
+    width:14px;height:14px;box-shadow:0 0 0 1px rgba(255,255,255,.1);
+  }
+  aside.compact #rightContent .new-entry-btn{
+    font-size:0;padding:10px 0;margin:8px 4px;width:calc(100% - 8px);
+  }
+  aside.compact #rightContent .new-entry-btn::before{
+    content:"+";font-size:20px;font-weight:800;line-height:1;
+  }
+}
+
 #backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:35;backdrop-filter:blur(2px)}
 #backdrop.show{display:block}
 
@@ -294,7 +343,7 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
 .detail-meta .mk{color:var(--muted)}
 .detail-meta .mv{color:var(--text);font-weight:600}
 
-/* USES BLOCK (dentro del detail) */
+/* USES BLOCK */
 .uses-block{
   margin-top:12px;padding:10px 12px;background:rgba(0,0,0,.3);
   border:1px solid var(--border-soft);border-radius:12px;
@@ -451,6 +500,11 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
       </div>
     </div>
     <div class="field">
+      <label>Icono de pestaña (emoji)</label>
+      <input type="text" id="setIcon" maxlength="4" placeholder="🧪" style="font-size:24px;text-align:center">
+      <div class="field-hint">Un emoji que aparecerá como ícono en la pestaña del navegador</div>
+    </div>
+    <div class="field">
       <label>Datos JSON completos</label>
       <textarea id="jsonArea" spellcheck="false"></textarea>
     </div>
@@ -552,6 +606,7 @@ const STORAGE_KEY = "dnd_v5";
 const DEFAULT_CHAR = {
   meta:{ name:"Sir Victor Vitruven", class:"Artífice (Alquimista)", level:4, race:"Shifter (Swiftstride)", background:"Noble", alignment:"Neutral" },
   portrait:"", wallpaper:"",
+  icon:"🧪",
   combat:{ hp:{current:33,max:33,temp:0}, ac:15, initiativeMisc:0, speed:30, hitDice:{current:4,max:4,die:"d8"}, deathSaves:{s:0,f:0}, inspiration:false, exhaustion:0, conditions:[] },
   stats:{ str:8, dex:10, con:12, int:18, wis:14, cha:14 },
   profBonus:2,
@@ -737,7 +792,7 @@ function toast(msg){
 function findEntry(id){ return C.entries.find(e => e.id === id); }
 
 /* ============================================================
-   WALLPAPER / PORTRAIT
+   WALLPAPER / PORTRAIT / FAVICON
    ============================================================ */
 function applyWallpaper(){
   const w = document.getElementById("wallpaper");
@@ -748,6 +803,13 @@ function applyPortrait(){
   const p = document.getElementById("portrait");
   if(C.portrait){ p.style.backgroundImage = `url("${C.portrait}")`; p.textContent = ""; }
   else { p.style.backgroundImage = ""; p.textContent = "🛡️"; }
+}
+function applyFavicon(){
+  const emoji = C.icon || "🎲";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`;
+  let link = document.querySelector("link[rel='icon']");
+  if(!link){ link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
+  link.href = "data:image/svg+xml," + encodeURIComponent(svg);
 }
 
 /* ============================================================
@@ -889,7 +951,6 @@ function renderDetailHTML(e, pinned){
     restoreTag = `<span class="tag restore">↻ ${RESTORE_LABELS[e.restore]||e.restore}</span>`;
   }
 
-  // Bloque de espacios de conjuro (solo si es spell/cantrip con nivel >= 1)
   let slotBlock = "";
   if((e.kind === "spell" || e.kind === "cantrip") && e.level >= 1){
     const pool = C.spellSlots[e.level];
@@ -912,7 +973,6 @@ function renderDetailHTML(e, pinned){
     }
   }
 
-  // Bloque de usos propios
   let usesBlock = "";
   if(e.uses){
     const free = e.uses.current;
@@ -983,17 +1043,20 @@ function renderRest(){
 function renderAll(){
   renderHeader(); renderVitals(); renderLeft(); renderRight();
   renderQuickBar(); renderSlots(); renderDetailStack(); renderRest();
-  applyWallpaper(); applyPortrait();
+  applyWallpaper(); applyPortrait(); applyFavicon();
 }
 
 /* ============================================================
    PANELES
    ============================================================ */
 function togglePanel(side){
-  // En escritorio: ocultar/mostrar la columna
+  // En escritorio: alternar modo compacto
   if(window.innerWidth >= 900){
     const layout = document.querySelector(".layout");
-    layout.classList.toggle(side === "left" ? "hide-left" : "hide-right");
+    const aside = document.getElementById(side === "left" ? "leftPanel" : "rightPanel");
+    const layoutCls = side === "left" ? "left-compact" : "right-compact";
+    layout.classList.toggle(layoutCls);
+    aside.classList.toggle("compact");
     return;
   }
   // En móvil: deslizar
@@ -1160,7 +1223,6 @@ function saveEntryForm(){
     entry.description = description;
     entry.level = level;
     if(usesMax > 0){
-      // Mantener el estado si solo cambió el máximo
       const newCurrent = (oldMax === usesMax) ? oldCurrent : usesMax;
       entry.uses = { current: newCurrent, max: usesMax };
       entry.restore = restore || "long";
@@ -1198,6 +1260,7 @@ function deleteEntry(){
 function openSettings(){
   document.getElementById("setPortrait").value = C.portrait || "";
   document.getElementById("setWallpaper").value = C.wallpaper || "";
+  document.getElementById("setIcon").value = C.icon || "🧪";
   document.getElementById("jsonArea").value = JSON.stringify(C, null, 2);
   document.getElementById("settingsModal").classList.add("open");
 }
@@ -1297,6 +1360,7 @@ document.getElementById("backdrop").addEventListener("click", closePanels);
 /* Settings inputs */
 document.getElementById("setPortrait").addEventListener("change", e => { C.portrait = e.target.value.trim(); save(); applyPortrait(); });
 document.getElementById("setWallpaper").addEventListener("change", e => { C.wallpaper = e.target.value.trim(); save(); applyWallpaper(); });
+document.getElementById("setIcon").addEventListener("change", e => { C.icon = e.target.value.trim() || "🎲"; save(); applyFavicon(); });
 document.getElementById("filePortrait").addEventListener("change", e => {
   const f = e.target.files[0]; if(!f) return;
   const r = new FileReader();
