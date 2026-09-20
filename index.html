@@ -29,6 +29,13 @@
   --slot-empty:#1c1c28;
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --c-action:#6ba4e8;
+  --c-bonus:#b48ae8;
+  --c-reaction:#e8996b;
+  --c-attack:#e86b6b;
+  --c-cantrip:#6be8b4;
+  --c-spell:#e8b93a;
+  --c-item:#9a9aab;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;height:100%}
@@ -106,7 +113,7 @@ aside{
   aside{position:sticky;top:64px;max-height:calc(100vh - 74px);overflow-y:auto;transition:width .25s ease}
 }
 
-/* --- Modo compacto (escritorio) --- */
+/* --- MODO COMPACTO (escritorio) --- */
 @media(min-width:900px){
   aside.compact{
     width:64px !important;
@@ -118,7 +125,7 @@ aside{
   aside.compact .side-head{justify-content:center;padding:12px 6px}
   aside.compact .side-close{display:none}
 
-  /* Left compacto */
+  /* LEFT compacto */
   aside.compact #leftContent .section{padding:6px 4px}
   aside.compact #leftContent .section-title{display:none}
   aside.compact #leftContent .stats-grid{grid-template-columns:1fr;gap:4px}
@@ -129,27 +136,80 @@ aside{
   aside.compact #leftContent .skill,
   aside.compact #leftContent .section:last-child{display:none}
 
-  /* Right compacto */
+  /* RIGHT compacto — chips por categoría */
   aside.compact #rightContent .menu-sub{
-    font-size:0;padding:10px 4px 4px;text-align:center;
-    background:transparent;border-top:1px solid var(--border-soft);
+    font-size:10px;
+    padding:0;
+    margin:6px 8px;
+    text-align:center;
+    background:var(--panel3);
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:800;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+    color:#0a0a12;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    border:2px solid transparent;
+    transition:transform .15s, filter .15s, box-shadow .15s;
   }
-  aside.compact #rightContent .menu-sub::before{
-    content:"•";font-size:14px;color:var(--accent);
+  aside.compact #rightContent .menu-sub:active{
+    transform:scale(.93);
+    filter:brightness(1.15);
+    box-shadow:0 0 12px currentColor;
   }
-  aside.compact #rightContent .menu-item{justify-content:center;padding:9px 4px}
-  aside.compact #rightContent .menu-item .mi-name,
-  aside.compact #rightContent .menu-item .mi-formula{display:none}
-  aside.compact #rightContent .menu-item .mi-dot{
-    width:14px;height:14px;box-shadow:0 0 0 1px rgba(255,255,255,.1);
-  }
+  aside.compact #rightContent .menu-sub[data-kind="action"]{background:var(--c-action)}
+  aside.compact #rightContent .menu-sub[data-kind="bonus"]{background:var(--c-bonus)}
+  aside.compact #rightContent .menu-sub[data-kind="reaction"]{background:var(--c-reaction)}
+  aside.compact #rightContent .menu-sub[data-kind="attack"]{background:var(--c-attack)}
+  aside.compact #rightContent .menu-sub[data-kind="cantrip"]{background:var(--c-cantrip)}
+  aside.compact #rightContent .menu-sub[data-kind="spell"]{background:var(--c-spell)}
+  aside.compact #rightContent .menu-sub[data-kind="item"]{background:var(--c-item)}
+
+  aside.compact #rightContent .menu-sub .ms-full{display:none}
+  aside.compact #rightContent .menu-sub .ms-compact{display:inline}
+
+  aside.compact #rightContent .menu-item{display:none}
+  aside.compact #rightContent .filter-back{display:none}
   aside.compact #rightContent .new-entry-btn{
-    font-size:0;padding:10px 0;margin:8px 4px;width:calc(100% - 8px);
+    font-size:0;
+    padding:0;
+    margin:8px;
+    width:calc(100% - 16px);
+    min-height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
   aside.compact #rightContent .new-entry-btn::before{
-    content:"+";font-size:20px;font-weight:800;line-height:1;
+    content:"+";
+    font-size:22px;
+    font-weight:800;
+    line-height:1;
   }
 }
+
+/* Etiquetas cortas/largas del submenú */
+.menu-sub .ms-compact{display:none}
+
+/* Botón "ver todas" cuando hay filtro */
+.filter-back{
+  margin:10px 14px;
+  padding:8px 12px;
+  width:calc(100% - 28px);
+  border-radius:10px;
+  background:var(--panel3);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  font-weight:700;
+  font-size:12px;
+  text-align:left;
+  transition:background .15s, color .15s;
+}
+.filter-back:active{background:rgba(232,185,58,.2);color:var(--accent)}
 
 #backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:35;backdrop-filter:blur(2px)}
 #backdrop.show{display:block}
@@ -186,7 +246,15 @@ aside{
 .skill.prof .b,.skill.exp .b{color:var(--text)}
 
 /* MENU */
-.menu-sub{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);padding:12px 14px 6px;margin-top:2px;background:rgba(232,185,58,.04)}
+.menu-sub{
+  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--accent);padding:12px 14px 6px;margin-top:2px;
+  background:rgba(232,185,58,.04);
+  cursor:pointer;
+  transition:background .15s;
+}
+.menu-sub:active{background:rgba(232,185,58,.15)}
+
 .menu-item{display:flex;align-items:center;gap:8px;padding:11px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid var(--border-soft);transition:background .15s}
 .menu-item:last-child{border-bottom:none}
 .menu-item:hover{background:rgba(255,255,255,.04)}
@@ -194,13 +262,13 @@ aside{
 .menu-item .mi-name{flex:1;font-weight:600;color:var(--text)}
 .menu-item .mi-formula{font-family:var(--mono);font-size:11px;color:var(--text-dim)}
 .menu-item .mi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.menu-item.kind-action .mi-dot{background:#6ba4e8}
-.menu-item.kind-bonus .mi-dot{background:#b48ae8}
-.menu-item.kind-reaction .mi-dot{background:#e8996b}
-.menu-item.kind-attack .mi-dot{background:#e86b6b}
-.menu-item.kind-cantrip .mi-dot{background:#6be8b4}
-.menu-item.kind-spell .mi-dot{background:#e8b93a}
-.menu-item.kind-item .mi-dot{background:#9a9aab}
+.menu-item.kind-action .mi-dot{background:var(--c-action)}
+.menu-item.kind-bonus .mi-dot{background:var(--c-bonus)}
+.menu-item.kind-reaction .mi-dot{background:var(--c-reaction)}
+.menu-item.kind-attack .mi-dot{background:var(--c-attack)}
+.menu-item.kind-cantrip .mi-dot{background:var(--c-cantrip)}
+.menu-item.kind-spell .mi-dot{background:var(--c-spell)}
+.menu-item.kind-item .mi-dot{background:var(--c-item)}
 
 .new-entry-btn{margin:10px 14px;padding:10px;width:calc(100% - 28px);border-radius:10px;background:var(--panel3);border:1px dashed var(--border);color:var(--text-dim);font-weight:700;font-size:13px}
 .new-entry-btn:active{background:rgba(232,185,58,.2);color:var(--accent)}
@@ -278,7 +346,7 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
   cursor:pointer;font-size:13px;min-height:38px;transition:transform .15s, background .15s;
 }
 .chip:active{transform:scale(.95);background:rgba(232,185,58,.25)}
-.chip .ci{font-size:14px;color:#e8996b}
+.chip .ci{font-size:14px;color:var(--c-reaction)}
 .chip .ct{font-weight:600}
 
 /* SLOTS */
@@ -615,7 +683,6 @@ const DEFAULT_CHAR = {
   skillExpertise:["investigation"],
   spellSlots:{ 1:{max:3, used:0}, 2:{max:0, used:0}, 3:{max:0, used:0} },
   entries:[
-    /* REACCIONES */
     { id:"reac-1", kind:"reaction", name:"Repulsion Shield", tags:["Reacción","1 carga"], formula:"Empuje 15 ft", short:"Al ser impactado a 5 ft",
       description:"Cuando una criatura Large o menor a 5 ft te impacta cuerpo a cuerpo: gasta 1 carga y la empujas 15 ft directamente alejándola.",
       uses:{current:4,max:4}, restore:"dawn" },
@@ -625,7 +692,6 @@ const DEFAULT_CHAR = {
       description:"Consumir tú mismo o administrar a alguien a 5 ft como Bonus Action.\n\n1 = Healing 2d8+4 PG\n2 = Swiftness +10 ft 1h\n3 = Resilience +1 CA 10min\n4 = Boldness +1d4 ataques/salv 1min\n5 = Flight 10 ft 10min\n6 = Eliges",
       uses:{current:2,max:2}, restore:"long" },
 
-    /* ATAQUES */
     { id:"atk-1", kind:"attack", name:"Rapier oculta en bastón", tags:["Ataque","Cuerpo a cuerpo"], formula:"1d20+2 · 1d8+2 perforante", short:"Regla de mesa",
       description:"Bastón-espada con rapier oculta. Regla de mesa: suma DEX + competencia al daño." },
     { id:"atk-2", kind:"attack", name:"Daga", tags:["Ataque","Arrojadiza"], formula:"1d20+2 · 1d4 perforante", short:"20/60 ft · Sutil · Ligera",
@@ -636,7 +702,6 @@ const DEFAULT_CHAR = {
       description:"Ataque de conjuro a distancia. El objetivo queda Envenenado hasta el final de tu siguiente turno. Siempre preparado por Alquimista.",
       meta:{ "Escuela":"Necromancia" } },
 
-    /* ACCIONES */
     { id:"act-1", kind:"action", name:"Acid Splash", tags:["Truco","Área","Acción"], formula:"DES CD 14 · 1d6 ácido", short:"60 ft · Esfera 5 ft", level:0,
       description:"Las criaturas en una esfera de 5 ft de radio hacen salvación de Destreza. Fallo: 1d6 ácido. Éxito: nada. Escala a 2d6 al nivel 5.",
       meta:{ "Escuela":"Evocación", "Componentes":"V, S" } },
@@ -661,7 +726,6 @@ const DEFAULT_CHAR = {
     { id:"act-8", kind:"action", name:"Study (Keen Mind)", tags:["Bonus Action","Rasgo","Investigación"], formula:"Investigación +8", short:"Como Bonus Action",
       description:"Puedes usar Study como Bonus Action. Ideal para pistas, mecanismos, textos y fenómenos extraños." },
 
-    /* BONUS ACTIONS */
     { id:"bon-1", kind:"bonus", name:"Sanctuary", tags:["Conjuro","Bonus Action"], formula:"SAB CD 14", short:"30 ft · 1 min", level:1,
       description:"Alguien que ataque o use un conjuro dañino contra el protegido debe superar SAB CD 14. Fallo: cambia de objetivo o pierde el ataque/conjuro. No protege contra áreas. Termina si el protegido ataca, conjura o inflige daño.",
       meta:{ "Escuela":"Abjuración", "Componentes":"V, S, M", "Material":"Fragmento de espejo" } },
@@ -673,7 +737,6 @@ const DEFAULT_CHAR = {
       meta:{ "Regalo Oscuro":"Segunda Piel" },
       uses:{current:1,max:1}, restore:"long" },
 
-    /* CONJUROS (repetidos para la sección Conjuros) */
     { id:"spl-1", kind:"spell", name:"Sanctuary", tags:["Nivel 1","Abjuración"], formula:"SAB CD 14", short:"Bonus Action · 30 ft · 1 min", level:1,
       description:"Ver detalle completo en Acciones adicionales.", meta:{} },
     { id:"spl-2", kind:"spell", name:"Faerie Fire", tags:["Nivel 1","Concentración","Área"], formula:"DES CD 14", short:"60 ft · Cubo 20 ft · 1 min", level:1,
@@ -685,7 +748,6 @@ const DEFAULT_CHAR = {
     { id:"spl-5", kind:"spell", name:"Snare", tags:["Nivel 1","Trampa"], formula:"DES CD 14", short:"Toque · 8 h", level:1,
       description:"Ver detalle completo en Acciones.", meta:{} },
 
-    /* TRUCOS */
     { id:"cnt-1", kind:"cantrip", name:"Acid Splash", tags:["Truco","Evocación"], formula:"DES CD 14 · 1d6", short:"60 ft · Esfera 5 ft", level:0,
       description:"Salvación de Destreza. Fallo: 1d6 ácido. Escala a 2d6 al nivel 5." },
     { id:"cnt-2", kind:"cantrip", name:"Fire Bolt", tags:["Truco","Evocación"], formula:"1d20+6 · 1d10", short:"120 ft · Ataque", level:0,
@@ -693,7 +755,6 @@ const DEFAULT_CHAR = {
     { id:"cnt-3", kind:"cantrip", name:"Mending", tags:["Truco","Utilidad"], formula:"—", short:"Toque · 1 minuto", level:0,
       description:"Repara roturas de hasta 1 ft. No restaura propiedades mágicas perdidas." },
 
-    /* OBJETOS */
     { id:"itm-1", kind:"item", name:"Experimental Elixirs", tags:["Objeto","Alquimista"], formula:"2 elixires", short:"Tras descanso largo",
       description:"Después de un descanso largo creas 2 elixires. Tiras 1d6 por cada uno:\n1 = Healing 2d8+4 PG\n2 = Swiftness +10 ft 1h\n3 = Resilience +1 CA 10min\n4 = Boldness +1d4 1min\n5 = Flight 10 ft 10min\n6 = Eliges\n\nTambién puedes crear uno adicional gastando un spell slot.",
       uses:{current:2,max:2}, restore:"long" },
@@ -757,6 +818,10 @@ const KIND_LABELS = {
   reaction:"Reacciones", bonus:"Acciones adicionales", action:"Acciones",
   attack:"Ataques", cantrip:"Trucos", spell:"Conjuros preparados", item:"Objetos"
 };
+const KIND_SHORT = {
+  reaction:"Reac", bonus:"Bonus", action:"Acción",
+  attack:"Ataq", cantrip:"Truco", spell:"Conjuro", item:"Objeto"
+};
 const KIND_ORDER = ["reaction","bonus","action","attack","cantrip","spell","item"];
 const RESTORE_LABELS = { short:"Corto", long:"Largo", dawn:"Amanecer", never:"Manual" };
 
@@ -764,7 +829,7 @@ const RESTORE_LABELS = { short:"Corto", long:"Largo", dawn:"Amanecer", never:"Ma
    ESTADO
    ============================================================ */
 let C = loadChar();
-let UI = { activeDetail:null, pinnedDetails:[], panelOpen:null, editingId:null };
+let UI = { activeDetail:null, pinnedDetails:[], panelOpen:null, editingId:null, rightFilter:null };
 
 function clone(o){return JSON.parse(JSON.stringify(o))}
 function loadChar(){
@@ -871,11 +936,26 @@ function renderRight(){
   const el = document.getElementById("rightContent");
   const groups = {};
   for(const e of C.entries){ if(!groups[e.kind]) groups[e.kind] = []; groups[e.kind].push(e); }
+
+  const isCompact = document.getElementById("rightPanel").classList.contains("compact");
+  const filter = UI.rightFilter;
+
   let html = "";
-  for(const kind of KIND_ORDER){
+
+  // Si hay filtro, botón para volver a "todas"
+  if(filter && !isCompact){
+    html += `<button class="filter-back" data-action="clear-filter">← Ver todas las secciones</button>`;
+  }
+
+  const kindsToShow = (filter && !isCompact) ? [filter] : KIND_ORDER;
+
+  for(const kind of kindsToShow){
     const items = groups[kind];
     if(!items || !items.length) continue;
-    html += `<div class="menu-sub">${KIND_LABELS[kind]} · ${items.length}</div>`;
+    html += `<div class="menu-sub" data-kind="${kind}" data-action="click-section" data-section="${kind}">
+      <span class="ms-full">${KIND_LABELS[kind]} · ${items.length}</span>
+      <span class="ms-compact">${KIND_SHORT[kind]}</span>
+    </div>`;
     for(const e of items){
       html += `<div class="menu-item kind-${kind}" data-action="open-detail" data-id="${e.id}">
         <span class="mi-dot"></span>
@@ -884,6 +964,7 @@ function renderRight(){
       </div>`;
     }
   }
+
   html += `<button class="new-entry-btn" data-action="open-entry-form">+ Nueva entrada</button>`;
   el.innerHTML = html;
 }
@@ -1050,16 +1131,31 @@ function renderAll(){
    PANELES
    ============================================================ */
 function togglePanel(side){
-  // En escritorio: alternar modo compacto
   if(window.innerWidth >= 900){
     const layout = document.querySelector(".layout");
     const aside = document.getElementById(side === "left" ? "leftPanel" : "rightPanel");
     const layoutCls = side === "left" ? "left-compact" : "right-compact";
-    layout.classList.toggle(layoutCls);
-    aside.classList.toggle("compact");
+
+    if(aside.classList.contains("compact")){
+      // Expandir
+      aside.classList.remove("compact");
+      layout.classList.remove(layoutCls);
+      if(side === "right" && UI.rightFilter){
+        UI.rightFilter = null;
+        renderRight();
+      }
+    } else {
+      // Compactar
+      aside.classList.add("compact");
+      layout.classList.add(layoutCls);
+      if(side === "right" && UI.rightFilter){
+        UI.rightFilter = null;
+        renderRight();
+      }
+    }
     return;
   }
-  // En móvil: deslizar
+  // Móvil: deslizar
   const el = document.getElementById(side === "left" ? "leftPanel" : "rightPanel");
   const other = document.getElementById(side === "left" ? "rightPanel" : "leftPanel");
   const backdrop = document.getElementById("backdrop");
@@ -1072,6 +1168,7 @@ function togglePanel(side){
     backdrop.classList.add("show"); UI.panelOpen = side;
   }
 }
+
 function closePanels(){
   document.getElementById("leftPanel").className = "closed";
   document.getElementById("rightPanel").className = "closed";
@@ -1097,6 +1194,27 @@ function pinDetail(id){
 function closeDetail(id){
   if(UI.activeDetail === id) UI.activeDetail = null;
   renderDetailStack();
+}
+
+function clickSection(kind){
+  const aside = document.getElementById("rightPanel");
+  const layout = document.querySelector(".layout");
+
+  if(window.innerWidth >= 900 && aside.classList.contains("compact")){
+    // Estaba compacto → expandir + filtrar
+    aside.classList.remove("compact");
+    layout.classList.remove("right-compact");
+    UI.rightFilter = kind;
+  } else {
+    // Ya expandido → toggle filtro
+    UI.rightFilter = (UI.rightFilter === kind) ? null : kind;
+  }
+  renderRight();
+}
+
+function clearFilter(){
+  UI.rightFilter = null;
+  renderRight();
 }
 
 function toggleSlot(level, idx){
@@ -1158,7 +1276,7 @@ function longRest(){
 }
 
 /* ============================================================
-   FORMULARIO DE ENTRADAS
+   FORMULARIO
    ============================================================ */
 function openEntryForm(id){
   UI.editingId = id || null;
@@ -1201,17 +1319,15 @@ function saveEntryForm(){
 
   const kind = document.getElementById("fKind").value;
   const level = Math.max(0, Math.min(9, parseInt(document.getElementById("fLevel").value) || 0));
-  const tagsRaw = document.getElementById("fTags").value;
-  const tags = tagsRaw.split(",").map(s => s.trim()).filter(Boolean);
+  const tags = document.getElementById("fTags").value.split(",").map(s => s.trim()).filter(Boolean);
   const formula = document.getElementById("fFormula").value.trim();
   const short = document.getElementById("fShort").value.trim();
   const description = document.getElementById("fDesc").value.trim();
   const usesMax = Math.max(0, parseInt(document.getElementById("fUsesMax").value) || 0);
   const restore = document.getElementById("fRestore").value;
 
-  let entry;
   if(UI.editingId){
-    entry = findEntry(UI.editingId);
+    const entry = findEntry(UI.editingId);
     if(!entry) return;
     const oldCurrent = entry.uses ? entry.uses.current : 0;
     const oldMax = entry.uses ? entry.uses.max : 0;
@@ -1232,7 +1348,7 @@ function saveEntryForm(){
     }
     toast("Entrada actualizada ✓");
   } else {
-    entry = { id: uid(), kind, name, tags, formula, short, description, level };
+    const entry = { id: uid(), kind, name, tags, formula, short, description, level };
     if(usesMax > 0){
       entry.uses = { current: usesMax, max: usesMax };
       entry.restore = restore || "long";
@@ -1310,6 +1426,8 @@ document.body.addEventListener("click", e => {
     case "toggle-use": toggleUse(t.dataset.id, parseInt(t.dataset.idx)); break;
     case "use-slot": useSlot(t.dataset.id, parseInt(t.dataset.level)); break;
     case "use-charge": useCharge(t.dataset.id); break;
+    case "click-section": clickSection(t.dataset.section); break;
+    case "clear-filter": clearFilter(); break;
 
     case "short-rest": shortRest(); break;
     case "long-rest": longRest(); break;
@@ -1339,7 +1457,6 @@ document.body.addEventListener("click", e => {
 
 document.getElementById("backdrop").addEventListener("click", closePanels);
 
-/* Inputs vitals */
 ["hpCur","hpMax","hpTemp","acVal","iniVal","velVal"].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener("change", () => {
@@ -1357,7 +1474,6 @@ document.getElementById("backdrop").addEventListener("click", closePanels);
   el.addEventListener("blur", () => { if(el.value === "") el.dispatchEvent(new Event("change")); });
 });
 
-/* Settings inputs */
 document.getElementById("setPortrait").addEventListener("change", e => { C.portrait = e.target.value.trim(); save(); applyPortrait(); });
 document.getElementById("setWallpaper").addEventListener("change", e => { C.wallpaper = e.target.value.trim(); save(); applyWallpaper(); });
 document.getElementById("setIcon").addEventListener("change", e => { C.icon = e.target.value.trim() || "🎲"; save(); applyFavicon(); });
@@ -1387,7 +1503,6 @@ document.getElementById("fileImport").addEventListener("change", e => {
   r.readAsText(f); e.target.value = "";
 });
 
-/* Cerrar modales al tocar fuera */
 document.querySelectorAll(".modal").forEach(m => {
   m.addEventListener("click", e => { if(e.target === m) m.classList.remove("open"); });
 });
