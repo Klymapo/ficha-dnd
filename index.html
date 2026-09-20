@@ -253,7 +253,6 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
 .btn-row.wide{grid-template-columns:1fr}
 .btn-row.triple{grid-template-columns:1fr 1fr 1fr}
 
-/* CHAR LIST */
 .char-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;max-height:55vh;overflow-y:auto}
 .char-group-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);padding:10px 4px 4px;margin-top:6px;border-bottom:1px solid var(--border-soft)}
 .char-group-label:first-child{margin-top:0;padding-top:0}
@@ -462,13 +461,29 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
 
 <script>
 /* ============================================================
+   UTILIDADES GLOBALES (definidas primero para evitar TDZ)
+   ============================================================ */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function deepMerge(t,s){
+  for(const k in s){
+    if(s[k] && typeof s[k]==="object" && !Array.isArray(s[k])) t[k] = deepMerge(t[k]||{}, s[k]);
+    else t[k] = s[k];
+  }
+  return t;
+}
+const mod = n => Math.floor((n-10)/2);
+const fmt = n => (n>=0?"+":"")+n;
+const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ============================================================
    DATOS
    ============================================================ */
 const STORAGE_KEY = "dnd_v6";
 const OLD_KEY = "dnd_v5";
 
 const DEFAULT_CHAR = {
-  id: "default-victor",
+  id: null,
   type: "pc",
   campaign: "",
   meta:{ name:"Sir Victor Vitruven", class:"Artífice (Alquimista)", level:4, race:"Shifter (Swiftstride)", background:"Noble", alignment:"Neutral" },
@@ -613,28 +628,21 @@ const RESTORE_LABELS = { short:"Corto", long:"Largo", dawn:"Amanecer", never:"Ma
 /* ============================================================
    ESTADO / DB
    ============================================================ */
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-
 let DB = loadDB();
 let C = DB.characters.find(c => c.id === DB.activeId) || DB.characters[0];
 let UI = { activeDetail:null, pinnedDetails:[], panelOpen:null, editingId:null, rightFilter:null };
 
-function clone(o){return JSON.parse(JSON.stringify(o))}
-function deepMerge(t,s){
-  for(const k in s){
-    if(s[k] && typeof s[k]==="object" && !Array.isArray(s[k])) t[k] = deepMerge(t[k]||{}, s[k]);
-    else t[k] = s[k];
-  }
-  return t;
-}
 function makePC(){
   const c = clone(DEFAULT_CHAR);
-  c.id = uid(); c.type = "pc"; c.campaign = "";
+  c.id = uid();
+  c.type = "pc";
+  c.campaign = "";
   return c;
 }
 function makeNPC(){
   const c = clone(NPC_TEMPLATE);
-  c.id = uid(); c.type = "npc";
+  c.id = uid();
+  c.type = "npc";
   return c;
 }
 function loadDB(){
@@ -644,14 +652,13 @@ function loadDB(){
       const db = JSON.parse(raw);
       if(db && Array.isArray(db.characters) && db.characters.length) return db;
     }
-    // Migrar desde v5 (un solo personaje)
     const old = localStorage.getItem(OLD_KEY);
     if(old){
       const c = deepMerge(clone(DEFAULT_CHAR), JSON.parse(old));
       c.id = uid(); c.type = "pc"; c.campaign = c.campaign || "";
       return { characters:[c], activeId:c.id };
     }
-  }catch(e){ console.warn(e); }
+  }catch(e){ console.warn("loadDB error:", e); }
   const c = makePC();
   return { characters:[c], activeId:c.id };
 }
@@ -663,17 +670,13 @@ function save(){
   }catch(e){ console.warn("No se pudo guardar", e); }
 }
 function activeChar(){ return DB.characters.find(c => c.id === DB.activeId) || DB.characters[0]; }
-
-const mod = n => Math.floor((n-10)/2);
-const fmt = n => (n>=0?"+":"")+n;
-const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function findEntry(id){ return C.entries.find(e => e.id === id); }
 
 function toast(msg){
   const t = document.getElementById("toast");
   t.textContent = msg; t.classList.add("show");
   clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove("show"), 1800);
 }
-function findEntry(id){ return C.entries.find(e => e.id === id); }
 
 /* ============================================================
    WALLPAPER / PORTRAIT / FAVICON
@@ -1082,14 +1085,12 @@ function closeChars(){ document.getElementById("charsModal").classList.remove("o
 
 function renderCharList(){
   const el = document.getElementById("charList");
-  // Agrupar por campaña
   const groups = {};
   for(const c of DB.characters){
     const key = c.campaign && c.campaign.trim() ? c.campaign.trim() : "(Sin campaña)";
     if(!groups[key]) groups[key] = [];
     groups[key].push(c);
   }
-  // Ordenar: primera "Sin campaña"? No, mejor alfabético con "(Sin campaña)" al final
   const keys = Object.keys(groups).sort((a,b) => {
     if(a === "(Sin campaña)") return 1;
     if(b === "(Sin campaña)") return -1;
@@ -1134,7 +1135,6 @@ function newChar(type){
   save();
   const c = type === "npc" ? makeNPC() : makePC();
   if(type === "pc") c.meta.name = "Nuevo PJ";
-  // Heredar campaña del actual
   c.campaign = C.campaign || "";
   DB.characters.push(c);
   DB.activeId = c.id;
