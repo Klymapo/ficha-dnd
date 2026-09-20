@@ -46,12 +46,18 @@ header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:8px;
 }
 
 aside{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:0;overflow:hidden;transition:transform .3s cubic-bezier(.32,.72,.3,1), opacity .25s}
+
+/* ==== MÓVIL: panel deslizante (arreglado) ==== */
 @media(max-width:899px){
   aside{position:fixed;top:56px;bottom:0;width:min(88vw,340px);z-index:40;border-radius:16px;margin:8px;overflow-y:auto}
-  aside#leftPanel{left:0;transform:translateX(-110%)}
-  aside#rightPanel{right:0;transform:translateX(110%)}
-  aside.open{transform:translateX(0)} aside.closed{pointer-events:none}
+  aside#leftPanel{left:0}
+  aside#rightPanel{right:0}
+  aside#leftPanel:not(.open){transform:translateX(-110%)}
+  aside#rightPanel:not(.open){transform:translateX(110%)}
+  aside.open{transform:translateX(0)}
+  aside:not(.open){pointer-events:none}
 }
+
 @media(min-width:900px){aside{position:sticky;top:64px;max-height:calc(100vh - 74px);overflow-y:auto;transition:width .25s ease}}
 
 @media(min-width:900px){
