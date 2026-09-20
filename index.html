@@ -9,123 +9,57 @@
 <title>Ficha D&D</title>
 <style>
 :root{
-  --bg:#0a0a12;
-  --panel:#181822;
-  --panel2:#22222e;
-  --panel3:#2c2c3a;
-  --input-bg:#0d0d15;
-  --border:#3a3a4a;
-  --border-soft:#2a2a36;
-  --text:#f0f0f5;
-  --text-dim:#b8b8c4;
-  --muted:#8a8a9a;
-  --accent:#e8b93a;
-  --accent-dim:#a8842a;
-  --hp:#ff5252;
-  --hp-low:#ff2020;
-  --temp:#4dc0ff;
-  --heal:#4ade80;
-  --slot:#a583ff;
-  --slot-empty:#1c1c28;
+  --bg:#0a0a12; --panel:#181822; --panel2:#22222e; --panel3:#2c2c3a;
+  --input-bg:#0d0d15; --border:#3a3a4a; --border-soft:#2a2a36;
+  --text:#f0f0f5; --text-dim:#b8b8c4; --muted:#8a8a9a;
+  --accent:#e8b93a; --accent-dim:#a8842a;
+  --hp:#ff5252; --hp-low:#ff2020; --temp:#4dc0ff; --heal:#4ade80;
+  --slot:#a583ff; --slot-empty:#1c1c28;
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --c-action:#6ba4e8;
-  --c-bonus:#b48ae8;
-  --c-reaction:#e8996b;
-  --c-attack:#e86b6b;
-  --c-cantrip:#6be8b4;
-  --c-spell:#e8b93a;
-  --c-item:#9a9aab;
+  --c-action:#6ba4e8; --c-bonus:#b48ae8; --c-reaction:#e8996b;
+  --c-attack:#e86b6b; --c-cantrip:#6be8b4; --c-spell:#e8b93a; --c-item:#9a9aab;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;height:100%}
-body{
-  font-family:var(--font);
-  background:var(--bg);color:var(--text);font-size:15px;line-height:1.4;
-  overscroll-behavior:none;min-height:100vh;
-}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.4;overscroll-behavior:none;min-height:100vh}
 button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer;touch-action:manipulation}
 input,textarea,select{font-family:inherit;color:inherit;font-size:15px}
 
-/* WALLPAPER */
-#wallpaper{
-  position:fixed;inset:0;z-index:-2;
-  background:radial-gradient(circle at 20% 10%, #1a1a30 0%, #0a0a12 60%);
-  background-size:cover;background-position:center;
-  transition:background-image .4s ease;
-}
-#wall-overlay{
-  position:fixed;inset:0;z-index:-1;
-  background:linear-gradient(180deg, rgba(0,0,0,.6) 0%, rgba(0,0,0,.82) 100%);
-}
+#wallpaper{position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at 20% 10%, #1a1a30 0%, #0a0a12 60%);background-size:cover;background-position:center;transition:background-image .4s ease}
+#wall-overlay{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(0,0,0,.6) 0%, rgba(0,0,0,.82) 100%)}
 
-/* TOP BAR */
-header{
-  position:sticky;top:0;z-index:30;
-  display:flex;align-items:center;gap:8px;
-  padding:8px 10px;
-  background:rgba(10,10,18,.85);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-}
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(10,10,18,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 .head-info{flex:1;min-width:0;text-align:center}
 .head-info .name{font-size:15px;font-weight:700;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .head-info .sub{font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.icon-btn{
-  font-size:18px;padding:8px 10px;border-radius:10px;
-  background:var(--panel2);border:1px solid var(--border);
-  line-height:1;flex-shrink:0;color:var(--text);
-  transition:transform .15s, background .15s;
-}
+.head-info .camp{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.icon-btn{font-size:18px;padding:8px 10px;border-radius:10px;background:var(--panel2);border:1px solid var(--border);line-height:1;flex-shrink:0;color:var(--text);transition:transform .15s, background .15s}
 .icon-btn:active{transform:scale(.92);background:rgba(232,185,58,.25)}
 
-/* LAYOUT */
 .layout{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1500px;margin:0 auto;min-height:calc(100vh - 50px)}
 @media(min-width:900px){
-  .layout{
-    grid-template-columns: var(--left-w, 300px) 1fr var(--right-w, 320px);
-    align-items:start;
-    transition: grid-template-columns .25s ease;
-  }
-  .layout.hide-left{ --left-w: 0px; }
-  .layout.hide-right{ --right-w: 0px; }
-  .layout.left-compact{ --left-w: 64px; }
-  .layout.right-compact{ --right-w: 64px; }
-  .layout.hide-left #leftPanel,
-  .layout.hide-right #rightPanel{ display:none; }
+  .layout{grid-template-columns: var(--left-w, 300px) 1fr var(--right-w, 320px);align-items:start;transition:grid-template-columns .25s ease}
+  .layout.hide-left{--left-w:0px} .layout.hide-right{--right-w:0px}
+  .layout.left-compact{--left-w:64px} .layout.right-compact{--right-w:64px}
+  .layout.hide-left #leftPanel, .layout.hide-right #rightPanel{display:none}
 }
 
-/* SIDE PANELS */
-aside{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:16px;padding:0;overflow:hidden;
-  transition:transform .3s cubic-bezier(.32,.72,.3,1), opacity .25s;
-}
+aside{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:0;overflow:hidden;transition:transform .3s cubic-bezier(.32,.72,.3,1), opacity .25s}
 @media(max-width:899px){
   aside{position:fixed;top:56px;bottom:0;width:min(88vw,340px);z-index:40;border-radius:16px;margin:8px;overflow-y:auto}
   aside#leftPanel{left:0;transform:translateX(-110%)}
   aside#rightPanel{right:0;transform:translateX(110%)}
-  aside.open{transform:translateX(0)}
-  aside.closed{pointer-events:none}
+  aside.open{transform:translateX(0)} aside.closed{pointer-events:none}
 }
-@media(min-width:900px){
-  aside{position:sticky;top:64px;max-height:calc(100vh - 74px);overflow-y:auto;transition:width .25s ease}
-}
+@media(min-width:900px){aside{position:sticky;top:64px;max-height:calc(100vh - 74px);overflow-y:auto;transition:width .25s ease}}
 
-/* --- MODO COMPACTO (escritorio) --- */
 @media(min-width:900px){
-  aside.compact{
-    width:64px !important;
-    min-width:64px;
-    overflow:hidden;
-  }
+  aside.compact{width:64px !important;min-width:64px;overflow:hidden}
   aside.compact .side-title{font-size:0}
   aside.compact .side-title::before{content:"•";font-size:18px;color:var(--accent)}
   aside.compact .side-head{justify-content:center;padding:12px 6px}
   aside.compact .side-close{display:none}
-
-  /* LEFT compacto */
   aside.compact #leftContent .section{padding:6px 4px}
   aside.compact #leftContent .section-title{display:none}
   aside.compact #leftContent .stats-grid{grid-template-columns:1fr;gap:4px}
@@ -133,34 +67,9 @@ aside{
   aside.compact #leftContent .stat .k{font-size:7px;letter-spacing:0}
   aside.compact #leftContent .stat .v{font-size:15px;margin:1px 0}
   aside.compact #leftContent .stat .m{font-size:10px}
-  aside.compact #leftContent .skill,
-  aside.compact #leftContent .section:last-child{display:none}
-
-  /* RIGHT compacto — chips por categoría */
-  aside.compact #rightContent .menu-sub{
-    font-size:10px;
-    padding:0;
-    margin:6px 8px;
-    text-align:center;
-    background:var(--panel3);
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:800;
-    letter-spacing:0.3px;
-    text-transform:uppercase;
-    color:#0a0a12;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:44px;
-    border:2px solid transparent;
-    transition:transform .15s, filter .15s, box-shadow .15s;
-  }
-  aside.compact #rightContent .menu-sub:active{
-    transform:scale(.93);
-    filter:brightness(1.15);
-    box-shadow:0 0 12px currentColor;
-  }
+  aside.compact #leftContent .skill,aside.compact #leftContent .section:last-child{display:none}
+  aside.compact #rightContent .menu-sub{font-size:10px;padding:0;margin:6px 8px;text-align:center;background:var(--panel3);border-radius:10px;cursor:pointer;font-weight:800;letter-spacing:0.3px;text-transform:uppercase;color:#0a0a12;display:flex;align-items:center;justify-content:center;min-height:44px;border:2px solid transparent;transition:transform .15s, filter .15s, box-shadow .15s}
+  aside.compact #rightContent .menu-sub:active{transform:scale(.93);filter:brightness(1.15);box-shadow:0 0 12px currentColor}
   aside.compact #rightContent .menu-sub[data-kind="action"]{background:var(--c-action)}
   aside.compact #rightContent .menu-sub[data-kind="bonus"]{background:var(--c-bonus)}
   aside.compact #rightContent .menu-sub[data-kind="reaction"]{background:var(--c-reaction)}
@@ -168,74 +77,36 @@ aside{
   aside.compact #rightContent .menu-sub[data-kind="cantrip"]{background:var(--c-cantrip)}
   aside.compact #rightContent .menu-sub[data-kind="spell"]{background:var(--c-spell)}
   aside.compact #rightContent .menu-sub[data-kind="item"]{background:var(--c-item)}
-
   aside.compact #rightContent .menu-sub .ms-full{display:none}
   aside.compact #rightContent .menu-sub .ms-compact{display:inline}
-
   aside.compact #rightContent .menu-item{display:none}
   aside.compact #rightContent .filter-back{display:none}
-  aside.compact #rightContent .new-entry-btn{
-    font-size:0;
-    padding:0;
-    margin:8px;
-    width:calc(100% - 16px);
-    min-height:40px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  aside.compact #rightContent .new-entry-btn::before{
-    content:"+";
-    font-size:22px;
-    font-weight:800;
-    line-height:1;
-  }
+  aside.compact #rightContent .new-entry-btn{font-size:0;padding:0;margin:8px;width:calc(100% - 16px);min-height:40px;display:flex;align-items:center;justify-content:center}
+  aside.compact #rightContent .new-entry-btn::before{content:"+";font-size:22px;font-weight:800;line-height:1}
 }
 
-/* Etiquetas cortas/largas del submenú */
 .menu-sub .ms-compact{display:none}
-
-/* Botón "ver todas" cuando hay filtro */
-.filter-back{
-  margin:10px 14px;
-  padding:8px 12px;
-  width:calc(100% - 28px);
-  border-radius:10px;
-  background:var(--panel3);
-  border:1px solid var(--border);
-  color:var(--text-dim);
-  font-weight:700;
-  font-size:12px;
-  text-align:left;
-  transition:background .15s, color .15s;
-}
+.filter-back{margin:10px 14px;padding:8px 12px;width:calc(100% - 28px);border-radius:10px;background:var(--panel3);border:1px solid var(--border);color:var(--text-dim);font-weight:700;font-size:12px;text-align:left;transition:background .15s, color .15s}
 .filter-back:active{background:rgba(232,185,58,.2);color:var(--accent)}
 
 #backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:35;backdrop-filter:blur(2px)}
 #backdrop.show{display:block}
 
-.side-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 14px;border-bottom:1px solid var(--border);
-  position:sticky;top:0;background:var(--panel);z-index:2;
-}
+.side-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--panel);z-index:2}
 .side-title{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
 .side-close{font-size:16px;padding:4px 8px;color:var(--muted)}
 @media(min-width:900px){.side-close{display:none}}
 
-/* SECTIONS */
 .section{padding:10px 14px;border-bottom:1px solid var(--border-soft)}
 .section:last-child{border-bottom:none}
 .section-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 
-/* STATS */
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .stat{background:var(--panel3);border:1px solid var(--border);border-radius:10px;padding:6px 4px;text-align:center}
 .stat .k{font-size:9px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px;font-weight:700}
 .stat .v{font-size:18px;font-weight:800;margin:2px 0;color:var(--text)}
 .stat .m{font-size:12px;color:var(--accent);font-weight:700}
 
-/* SKILLS */
 .skill{display:grid;grid-template-columns:14px 1fr auto;align-items:center;gap:6px;padding:7px 4px;border-radius:8px;cursor:pointer;font-size:13px;transition:background .15s}
 .skill:hover{background:rgba(255,255,255,.05)}
 .skill:active{background:rgba(232,185,58,.15)}
@@ -245,14 +116,7 @@ aside{
 .skill .b{font-weight:700;color:var(--text-dim);font-variant-numeric:tabular-nums}
 .skill.prof .b,.skill.exp .b{color:var(--text)}
 
-/* MENU */
-.menu-sub{
-  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-  color:var(--accent);padding:12px 14px 6px;margin-top:2px;
-  background:rgba(232,185,58,.04);
-  cursor:pointer;
-  transition:background .15s;
-}
+.menu-sub{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);padding:12px 14px 6px;margin-top:2px;background:rgba(232,185,58,.04);cursor:pointer;transition:background .15s}
 .menu-sub:active{background:rgba(232,185,58,.15)}
 
 .menu-item{display:flex;align-items:center;gap:8px;padding:11px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid var(--border-soft);transition:background .15s}
@@ -273,54 +137,26 @@ aside{
 .new-entry-btn{margin:10px 14px;padding:10px;width:calc(100% - 28px);border-radius:10px;background:var(--panel3);border:1px dashed var(--border);color:var(--text-dim);font-weight:700;font-size:13px}
 .new-entry-btn:active{background:rgba(232,185,58,.2);color:var(--accent)}
 
-/* CENTER */
 main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
-
 .portrait-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
-.portrait{
-  width:150px;height:150px;border-radius:50%;
-  background:var(--panel2);border:3px solid rgba(255,255,255,.2);
-  box-shadow:0 8px 30px rgba(0,0,0,.6), inset 0 0 40px rgba(0,0,0,.5);
-  background-size:cover;background-position:center;cursor:pointer;
-  position:relative;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-  font-size:40px;color:var(--muted);transition:transform .2s;
-}
+.portrait{width:150px;height:150px;border-radius:50%;background:var(--panel2);border:3px solid rgba(255,255,255,.2);box-shadow:0 8px 30px rgba(0,0,0,.6), inset 0 0 40px rgba(0,0,0,.5);background-size:cover;background-position:center;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--muted);transition:transform .2s}
 .portrait:active{transform:scale(.95)}
 .portrait::after{content:"📷";position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.85);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:.9}
 
-/* VITALS */
 .vitals{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px}
 .hp-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:6px;font-weight:700}
 .hp-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px}
-.hp-input{
-  font-family:var(--font);font-size:52px;font-weight:800;line-height:1;
-  background:var(--input-bg);border:2px solid var(--border);border-radius:12px;
-  color:var(--hp);text-align:center;
-  width:auto;min-width:80px;max-width:130px;padding:2px 8px;
-  font-variant-numeric:tabular-nums;outline:none;
-  -moz-appearance:textfield;transition:border-color .15s;
-}
+.hp-input{font-family:var(--font);font-size:52px;font-weight:800;line-height:1;background:var(--input-bg);border:2px solid var(--border);border-radius:12px;color:var(--hp);text-align:center;width:auto;min-width:80px;max-width:130px;padding:2px 8px;font-variant-numeric:tabular-nums;outline:none;-moz-appearance:textfield;transition:border-color .15s}
 .hp-input::-webkit-outer-spin-button,.hp-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .hp-input:focus{border-color:var(--accent)}
 .hp-input.low{color:var(--hp-low);animation:pulse 1.2s infinite}
 .hp-input.temp{color:var(--temp)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
 .hp-sep{font-size:30px;color:var(--muted);font-weight:300}
-.hp-max{
-  font-family:var(--font);font-size:24px;font-weight:700;
-  background:var(--input-bg);border:2px solid var(--border);border-radius:10px;
-  color:var(--text-dim);width:70px;padding:4px 6px;text-align:center;outline:none;
-  -moz-appearance:textfield;transition:border-color .15s;
-}
+.hp-max{font-family:var(--font);font-size:24px;font-weight:700;background:var(--input-bg);border:2px solid var(--border);border-radius:10px;color:var(--text-dim);width:70px;padding:4px 6px;text-align:center;outline:none;-moz-appearance:textfield;transition:border-color .15s}
 .hp-max::-webkit-outer-spin-button,.hp-max::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .hp-max:focus{border-color:var(--accent)}
-.hp-temp{
-  font-size:20px;font-weight:700;color:var(--temp);font-family:var(--font);
-  background:var(--input-bg);border:2px solid var(--border);border-radius:10px;
-  width:60px;text-align:center;padding:4px 2px;outline:none;
-  -moz-appearance:textfield;transition:border-color .15s;
-}
+.hp-temp{font-size:20px;font-weight:700;color:var(--temp);font-family:var(--font);background:var(--input-bg);border:2px solid var(--border);border-radius:10px;width:60px;text-align:center;padding:4px 2px;outline:none;-moz-appearance:textfield;transition:border-color .15s}
 .hp-temp::-webkit-outer-spin-button,.hp-temp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .hp-temp:focus{border-color:var(--accent)}
 .hp-temp::placeholder{color:var(--muted);font-size:14px}
@@ -328,68 +164,41 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
 .mini-vitals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .mini{background:var(--panel3);border:1px solid var(--border);border-radius:10px;padding:8px 4px;text-align:center}
 .mini .k{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
-.mini .v{
-  font-size:20px;font-weight:800;margin-top:2px;font-family:var(--font);
-  background:var(--input-bg);border:1px solid var(--border);border-radius:6px;
-  color:var(--text);width:100%;text-align:center;padding:2px 0;outline:none;
-  -moz-appearance:textfield;transition:border-color .15s;
-}
+.mini .v{font-size:20px;font-weight:800;margin-top:2px;font-family:var(--font);background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);width:100%;text-align:center;padding:2px 0;outline:none;-moz-appearance:textfield;transition:border-color .15s}
 .mini .v::-webkit-outer-spin-button,.mini .v::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .mini .v:focus{border-color:var(--accent)}
 
-/* QUICK BAR */
 .quick-bar{display:flex;gap:8px;overflow-x:auto;padding:0 4px 4px;scrollbar-width:none}
 .quick-bar::-webkit-scrollbar{display:none}
-.chip{
-  flex-shrink:0;background:var(--panel2);border:1px solid var(--border);
-  border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:6px;
-  cursor:pointer;font-size:13px;min-height:38px;transition:transform .15s, background .15s;
-}
+.chip{flex-shrink:0;background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;min-height:38px;transition:transform .15s, background .15s}
 .chip:active{transform:scale(.95);background:rgba(232,185,58,.25)}
 .chip .ci{font-size:14px;color:var(--c-reaction)}
 .chip .ct{font-weight:600}
 
-/* SLOTS */
 .slots-block{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:12px 14px}
 .slot-line{display:flex;align-items:center;gap:10px;padding:6px 0}
 .slot-level{font-size:12px;font-weight:700;color:var(--text-dim);min-width:60px}
 .slot-pips{display:flex;gap:6px;flex-wrap:wrap;flex:1}
-.pip{
-  width:22px;height:22px;border-radius:6px;
-  border:2px solid var(--slot);background:var(--slot-empty);
-  transition:background .15s, transform .1s;cursor:pointer;
-}
+.pip{width:22px;height:22px;border-radius:6px;border:2px solid var(--slot);background:var(--slot-empty);transition:background .15s, transform .1s;cursor:pointer}
 .pip:active{transform:scale(.9)}
 .pip.used{background:var(--slot);opacity:.35;border-color:var(--slot)}
 .pip.free{background:var(--slot-empty);border-color:var(--slot)}
 .slot-count{font-size:11px;color:var(--text-dim);font-variant-numeric:tabular-nums;font-weight:700}
 
-/* DETAILS */
 .detail-stack{display:flex;flex-direction:column;gap:10px}
-.detail{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:16px;padding:14px 16px;
-  animation:slideDown .25s ease;position:relative;
-}
+.detail{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px 16px;animation:slideDown .25s ease;position:relative}
 @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .detail.pinned{border-color:rgba(232,185,58,.6);box-shadow:0 0 0 1px rgba(232,185,58,.2), 0 8px 24px rgba(0,0,0,.5)}
 .detail-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
 .detail-title{flex:1;font-size:18px;font-weight:800;color:var(--accent);line-height:1.2}
 .detail-sub{font-size:12px;color:var(--text-dim);margin-top:2px}
 .detail-actions{display:flex;gap:4px}
-.pin-btn,.close-btn,.edit-btn{
-  font-size:15px;padding:6px 8px;border-radius:8px;
-  background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);
-  transition:background .15s, color .15s;
-}
+.pin-btn,.close-btn,.edit-btn{font-size:15px;padding:6px 8px;border-radius:8px;background:var(--panel3);color:var(--text-dim);border:1px solid var(--border);transition:background .15s, color .15s}
 .pin-btn:active,.close-btn:active,.edit-btn:active{transform:scale(.9)}
 .pin-btn.on{background:rgba(232,185,58,.3);color:var(--accent);border-color:var(--accent)}
 
 .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.tag{
-  font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;
-  text-transform:uppercase;letter-spacing:.4px;border:1px solid transparent;
-}
+.tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;border:1px solid transparent}
 .tag.action{background:#1e3a5f;color:#a8caf0;border-color:#2c5688}
 .tag.bonus{background:#3d2a5f;color:#d0b0f0;border-color:#5a4088}
 .tag.reaction{background:#5f3a1e;color:#f0c8a0;border-color:#8a5630}
@@ -400,22 +209,13 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
 .tag.conc{background:#5f1e5f;color:#e0a8e0;border-color:#883088}
 .tag.restore{background:#1e4a5f;color:#a8dcf0;border-color:#2c6888}
 
-.formula-box{
-  background:rgba(0,0,0,.45);border:1px solid var(--border);
-  border-radius:10px;padding:12px;font-family:var(--mono);
-  font-size:15px;text-align:center;color:var(--accent);font-weight:800;
-  letter-spacing:.5px;margin:8px 0 12px;
-}
+.formula-box{background:rgba(0,0,0,.45);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:var(--mono);font-size:15px;text-align:center;color:var(--accent);font-weight:800;letter-spacing:.5px;margin:8px 0 12px}
 .detail-desc{font-size:13.5px;line-height:1.6;color:var(--text);opacity:.95;white-space:pre-wrap}
 .detail-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 14px;margin:10px 0;font-size:12px}
 .detail-meta .mk{color:var(--muted)}
 .detail-meta .mv{color:var(--text);font-weight:600}
 
-/* USES BLOCK */
-.uses-block{
-  margin-top:12px;padding:10px 12px;background:rgba(0,0,0,.3);
-  border:1px solid var(--border-soft);border-radius:12px;
-}
+.uses-block{margin-top:12px;padding:10px 12px;background:rgba(0,0,0,.3);border:1px solid var(--border-soft);border-radius:12px}
 .uses-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
 .uses-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim)}
 .uses-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -424,48 +224,28 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
 .uses-pips .pip.used{background:var(--slot);opacity:.35}
 .uses-pips .pip.free{background:var(--slot-empty);border-color:var(--slot)}
 .uses-count{font-size:11px;color:var(--text-dim);font-weight:700;font-variant-numeric:tabular-nums}
-.use-btn{
-  padding:7px 14px;border-radius:8px;
-  background:var(--accent);color:#0a0a12;font-weight:800;font-size:12px;
-  border:none;letter-spacing:.4px;text-transform:uppercase;
-  transition:transform .1s, filter .15s;flex-shrink:0;
-}
+.use-btn{padding:7px 14px;border-radius:8px;background:var(--accent);color:#0a0a12;font-weight:800;font-size:12px;border:none;letter-spacing:.4px;text-transform:uppercase;transition:transform .1s, filter .15s;flex-shrink:0}
 .use-btn:active{transform:scale(.95);filter:brightness(1.1)}
 .use-btn:disabled{background:var(--panel3);color:var(--muted);cursor:not-allowed;opacity:.6}
 .use-btn.full{background:var(--slot);color:#fff}
-
 .restore-hint{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:6px;font-weight:700}
 
-/* EMPTY */
 .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
 .empty .big{font-size:32px;margin-bottom:12px;opacity:.4}
 
-/* MODAL */
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
 .modal.open{display:flex}
-.modal-content{
-  background:var(--panel);border:1px solid var(--border);
-  width:100%;max-width:640px;max-height:88vh;
-  border-radius:16px;padding:18px;overflow-y:auto;
-}
+.modal-content{background:var(--panel);border:1px solid var(--border);width:100%;max-width:640px;max-height:88vh;border-radius:16px;padding:18px;overflow-y:auto}
 .modal-title{font-size:16px;font-weight:800;color:var(--accent);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
 .field{margin-bottom:12px}
 .field label{display:block;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;font-weight:700}
-.field input,.field textarea,.field select{
-  width:100%;background:var(--input-bg);border:1px solid var(--border);
-  border-radius:10px;padding:10px;font-size:14px;color:var(--text);outline:none;
-  transition:border-color .15s;
-}
+.field input,.field textarea,.field select{width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:14px;color:var(--text);outline:none;transition:border-color .15s}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
 .field textarea{font-family:var(--mono);font-size:12px;min-height:40vh;resize:vertical;line-height:1.5}
 .field textarea.short{min-height:100px;font-family:var(--font);font-size:13px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field-hint{font-size:11px;color:var(--muted);margin-top:4px}
-.btn{
-  padding:11px 14px;border-radius:10px;font-weight:700;font-size:13px;
-  background:var(--panel3);border:1px solid var(--border);color:var(--text);
-  min-height:44px;transition:transform .1s, filter .15s;
-}
+.btn{padding:11px 14px;border-radius:10px;font-weight:700;font-size:13px;background:var(--panel3);border:1px solid var(--border);color:var(--text);min-height:44px;transition:transform .1s, filter .15s}
 .btn:active{transform:scale(.97);filter:brightness(1.2)}
 .btn.primary{background:var(--accent);color:#0a0a12;border-color:var(--accent)}
 .btn.danger{background:rgba(255,82,82,.25);color:#ffb0b0;border-color:rgba(255,82,82,.5)}
@@ -473,13 +253,22 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
 .btn-row.wide{grid-template-columns:1fr}
 .btn-row.triple{grid-template-columns:1fr 1fr 1fr}
 
-.toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  background:var(--accent);color:#0a0a12;
-  padding:10px 20px;border-radius:24px;font-weight:800;font-size:13px;
-  z-index:200;opacity:0;transition:opacity .3s, transform .3s;
-  pointer-events:none;max-width:90vw;text-align:center;
-}
+/* CHAR LIST */
+.char-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;max-height:55vh;overflow-y:auto}
+.char-group-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);padding:10px 4px 4px;margin-top:6px;border-bottom:1px solid var(--border-soft)}
+.char-group-label:first-child{margin-top:0;padding-top:0}
+.char-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--panel3);border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;transition:border-color .15s, background .15s}
+.char-item:active{filter:brightness(1.15)}
+.char-item.active{border-color:var(--accent);background:rgba(232,185,58,.1)}
+.char-item .ci-type{font-size:9px;padding:2px 6px;border-radius:6px;background:var(--panel2);color:var(--muted);text-transform:uppercase;font-weight:800;flex-shrink:0}
+.char-item .ci-type.pc{background:rgba(39,174,96,.3);color:#a8f0c0}
+.char-item .ci-type.npc{background:rgba(231,76,60,.3);color:#f0b0a8}
+.char-item .ci-info{flex:1;min-width:0}
+.char-item .ci-name{font-weight:700;color:var(--text);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.char-item .ci-sub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.char-item .ci-hp{font-size:12px;font-weight:800;color:var(--hp);font-variant-numeric:tabular-nums;flex-shrink:0}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0a0a12;padding:10px 20px;border-radius:24px;font-weight:800;font-size:13px;z-index:200;opacity:0;transition:opacity .3s, transform .3s;pointer-events:none;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
 </style>
 </head>
@@ -493,7 +282,9 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
   <div class="head-info">
     <div class="name" id="hName">—</div>
     <div class="sub" id="hSub">—</div>
+    <div class="camp" id="hCamp">—</div>
   </div>
+  <button class="icon-btn" data-action="open-chars" title="Personajes">👥</button>
   <button class="icon-btn" data-action="toggle-right">☰</button>
   <button class="icon-btn" data-action="open-settings" title="Ajustes">⚙</button>
 </header>
@@ -552,6 +343,11 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
       <button class="icon-btn" data-action="close-settings">✕</button>
     </div>
     <div class="field">
+      <label>Campaña (etiqueta)</label>
+      <input type="text" id="setCampaign" placeholder="Ej: Tomb of Annihilation, Homebrew 2025...">
+      <div class="field-hint">Aparece bajo el nombre. Sirve para agrupar personajes.</div>
+    </div>
+    <div class="field">
       <label>Imagen del personaje (URL)</label>
       <input type="url" id="setPortrait" placeholder="https://... o vacío">
       <div class="btn-row" style="margin-top:6px">
@@ -573,7 +369,7 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
       <div class="field-hint">Un emoji que aparecerá como ícono en la pestaña del navegador</div>
     </div>
     <div class="field">
-      <label>Datos JSON completos</label>
+      <label>Datos JSON de este personaje</label>
       <textarea id="jsonArea" spellcheck="false"></textarea>
     </div>
     <div class="btn-row">
@@ -588,6 +384,23 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
     <input type="file" id="fileImport" accept=".json" style="display:none">
     <input type="file" id="filePortrait" accept="image/*" style="display:none">
     <input type="file" id="fileWallpaper" accept="image/*" style="display:none">
+  </div>
+</div>
+
+<!-- CHAR LIST MODAL -->
+<div class="modal" id="charsModal">
+  <div class="modal-content">
+    <div class="modal-title">
+      <span>Personajes</span>
+      <button class="icon-btn" data-action="close-chars">✕</button>
+    </div>
+    <div id="charList" class="char-list"></div>
+    <div class="btn-row">
+      <button class="btn primary" data-action="new-pc">+ Nuevo PJ</button>
+      <button class="btn" data-action="new-npc">+ Nuevo PNJ</button>
+      <button class="btn" data-action="duplicate-char">Duplicar actual</button>
+      <button class="btn danger" data-action="delete-char">Eliminar actual</button>
+    </div>
   </div>
 </div>
 
@@ -617,33 +430,15 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
         <div class="field-hint">0 = no es conjuro</div>
       </div>
     </div>
-    <div class="field">
-      <label>Nombre</label>
-      <input type="text" id="fName" placeholder="Ej: Fire Bolt">
-    </div>
-    <div class="field">
-      <label>Etiquetas (separadas por coma)</label>
-      <input type="text" id="fTags" placeholder="Truco, Ataque, Evocación">
-    </div>
+    <div class="field"><label>Nombre</label><input type="text" id="fName" placeholder="Ej: Fire Bolt"></div>
+    <div class="field"><label>Etiquetas (separadas por coma)</label><input type="text" id="fTags" placeholder="Truco, Ataque, Evocación"></div>
     <div class="field-row">
-      <div class="field">
-        <label>Fórmula</label>
-        <input type="text" id="fFormula" placeholder="1d20+6 · 1d10 fuego">
-      </div>
-      <div class="field">
-        <label>Resumen corto</label>
-        <input type="text" id="fShort" placeholder="120 ft · Instantánea">
-      </div>
+      <div class="field"><label>Fórmula</label><input type="text" id="fFormula" placeholder="1d20+6 · 1d10 fuego"></div>
+      <div class="field"><label>Resumen corto</label><input type="text" id="fShort" placeholder="120 ft · Instantánea"></div>
     </div>
-    <div class="field">
-      <label>Descripción completa</label>
-      <textarea id="fDesc" class="short" placeholder="Efecto, salvación, condiciones..."></textarea>
-    </div>
+    <div class="field"><label>Descripción completa</label><textarea id="fDesc" class="short" placeholder="Efecto, salvación, condiciones..."></textarea></div>
     <div class="field-row">
-      <div class="field">
-        <label>Usos máximos (0 = sin usos)</label>
-        <input type="number" id="fUsesMax" min="0" value="0">
-      </div>
+      <div class="field"><label>Usos máximos (0 = sin usos)</label><input type="number" id="fUsesMax" min="0" value="0"></div>
       <div class="field">
         <label>Recarga en</label>
         <select id="fRestore">
@@ -669,12 +464,15 @@ main.center{display:flex;flex-direction:column;gap:12px;min-width:0}
 /* ============================================================
    DATOS
    ============================================================ */
-const STORAGE_KEY = "dnd_v5";
+const STORAGE_KEY = "dnd_v6";
+const OLD_KEY = "dnd_v5";
 
 const DEFAULT_CHAR = {
+  id: "default-victor",
+  type: "pc",
+  campaign: "",
   meta:{ name:"Sir Victor Vitruven", class:"Artífice (Alquimista)", level:4, race:"Shifter (Swiftstride)", background:"Noble", alignment:"Neutral" },
-  portrait:"", wallpaper:"",
-  icon:"🧪",
+  portrait:"", wallpaper:"", icon:"🧪",
   combat:{ hp:{current:33,max:33,temp:0}, ac:15, initiativeMisc:0, speed:30, hitDice:{current:4,max:4,die:"d8"}, deathSaves:{s:0,f:0}, inspiration:false, exhaustion:0, conditions:[] },
   stats:{ str:8, dex:10, con:12, int:18, wis:14, cha:14 },
   profBonus:2,
@@ -691,7 +489,6 @@ const DEFAULT_CHAR = {
     { id:"reac-3", kind:"reaction", name:"Experimental Elixir", tags:["Bonus Action","Alquimista"], formula:"Consumir o dar", short:"Bonus Action a 5 ft",
       description:"Consumir tú mismo o administrar a alguien a 5 ft como Bonus Action.\n\n1 = Healing 2d8+4 PG\n2 = Swiftness +10 ft 1h\n3 = Resilience +1 CA 10min\n4 = Boldness +1d4 ataques/salv 1min\n5 = Flight 10 ft 10min\n6 = Eliges",
       uses:{current:2,max:2}, restore:"long" },
-
     { id:"atk-1", kind:"attack", name:"Rapier oculta en bastón", tags:["Ataque","Cuerpo a cuerpo"], formula:"1d20+2 · 1d8+2 perforante", short:"Regla de mesa",
       description:"Bastón-espada con rapier oculta. Regla de mesa: suma DEX + competencia al daño." },
     { id:"atk-2", kind:"attack", name:"Daga", tags:["Ataque","Arrojadiza"], formula:"1d20+2 · 1d4 perforante", short:"20/60 ft · Sutil · Ligera",
@@ -701,7 +498,6 @@ const DEFAULT_CHAR = {
     { id:"atk-4", kind:"attack", name:"Ray of Sickness", tags:["Conjuro","Ataque","Veneno"], formula:"1d20+6 · 2d8 veneno", short:"60 ft · Slot nivel 1", level:1,
       description:"Ataque de conjuro a distancia. El objetivo queda Envenenado hasta el final de tu siguiente turno. Siempre preparado por Alquimista.",
       meta:{ "Escuela":"Necromancia" } },
-
     { id:"act-1", kind:"action", name:"Acid Splash", tags:["Truco","Área","Acción"], formula:"DES CD 14 · 1d6 ácido", short:"60 ft · Esfera 5 ft", level:0,
       description:"Las criaturas en una esfera de 5 ft de radio hacen salvación de Destreza. Fallo: 1d6 ácido. Éxito: nada. Escala a 2d6 al nivel 5.",
       meta:{ "Escuela":"Evocación", "Componentes":"V, S" } },
@@ -725,7 +521,6 @@ const DEFAULT_CHAR = {
       meta:{ "Componentes":"S, M" } },
     { id:"act-8", kind:"action", name:"Study (Keen Mind)", tags:["Bonus Action","Rasgo","Investigación"], formula:"Investigación +8", short:"Como Bonus Action",
       description:"Puedes usar Study como Bonus Action. Ideal para pistas, mecanismos, textos y fenómenos extraños." },
-
     { id:"bon-1", kind:"bonus", name:"Sanctuary", tags:["Conjuro","Bonus Action"], formula:"SAB CD 14", short:"30 ft · 1 min", level:1,
       description:"Alguien que ataque o use un conjuro dañino contra el protegido debe superar SAB CD 14. Fallo: cambia de objetivo o pierde el ataque/conjuro. No protege contra áreas. Termina si el protegido ataca, conjura o inflige daño.",
       meta:{ "Escuela":"Abjuración", "Componentes":"V, S, M", "Material":"Fragmento de espejo" } },
@@ -736,7 +531,6 @@ const DEFAULT_CHAR = {
       description:"1/descanso largo SIN slot, sin componentes materiales y sin Concentración, usando INT. Adaptación acuática, cambio de apariencia o armas naturales (1d6, INT para ataque y daño).\n\nAl sacar 1 en un d20: CAR CD 15. Si fallas y conservas el uso, se activa. Si ya lo gastaste, quedas Stunned hasta el inicio de tu siguiente turno.",
       meta:{ "Regalo Oscuro":"Segunda Piel" },
       uses:{current:1,max:1}, restore:"long" },
-
     { id:"spl-1", kind:"spell", name:"Sanctuary", tags:["Nivel 1","Abjuración"], formula:"SAB CD 14", short:"Bonus Action · 30 ft · 1 min", level:1,
       description:"Ver detalle completo en Acciones adicionales.", meta:{} },
     { id:"spl-2", kind:"spell", name:"Faerie Fire", tags:["Nivel 1","Concentración","Área"], formula:"DES CD 14", short:"60 ft · Cubo 20 ft · 1 min", level:1,
@@ -747,14 +541,12 @@ const DEFAULT_CHAR = {
       description:"Ver detalle completo en Acciones.", meta:{} },
     { id:"spl-5", kind:"spell", name:"Snare", tags:["Nivel 1","Trampa"], formula:"DES CD 14", short:"Toque · 8 h", level:1,
       description:"Ver detalle completo en Acciones.", meta:{} },
-
     { id:"cnt-1", kind:"cantrip", name:"Acid Splash", tags:["Truco","Evocación"], formula:"DES CD 14 · 1d6", short:"60 ft · Esfera 5 ft", level:0,
       description:"Salvación de Destreza. Fallo: 1d6 ácido. Escala a 2d6 al nivel 5." },
     { id:"cnt-2", kind:"cantrip", name:"Fire Bolt", tags:["Truco","Evocación"], formula:"1d20+6 · 1d10", short:"120 ft · Ataque", level:0,
       description:"Ataque de conjuro a distancia. Prende objetos inflamables. Escala a 2d10 al nivel 5." },
     { id:"cnt-3", kind:"cantrip", name:"Mending", tags:["Truco","Utilidad"], formula:"—", short:"Toque · 1 minuto", level:0,
       description:"Repara roturas de hasta 1 ft. No restaura propiedades mágicas perdidas." },
-
     { id:"itm-1", kind:"item", name:"Experimental Elixirs", tags:["Objeto","Alquimista"], formula:"2 elixires", short:"Tras descanso largo",
       description:"Después de un descanso largo creas 2 elixires. Tiras 1d6 por cada uno:\n1 = Healing 2d8+4 PG\n2 = Swiftness +10 ft 1h\n3 = Resilience +1 CA 10min\n4 = Boldness +1d4 1min\n5 = Flight 10 ft 10min\n6 = Eliges\n\nTambién puedes crear uno adicional gastando un spell slot.",
       uses:{current:2,max:2}, restore:"long" },
@@ -773,16 +565,11 @@ const DEFAULT_CHAR = {
     { id:"itm-7", kind:"item", name:"Repulsion Shield", tags:["Objeto","Escudo"], formula:"+3 CA (12+2+1)", short:"CA total 15",
       description:"Escudo especial. 4 cargas. Reacción: cuando una criatura Large o menor a 5 ft te impacta cuerpo a cuerpo, gasta 1 carga y la empujas 15 ft.",
       uses:{current:4,max:4}, restore:"dawn" },
-    { id:"itm-8", kind:"item", name:"Daga", tags:["Objeto","Arma"], formula:"1d4 perforante", short:"Sutil · Ligera · Arrojadiza 20/60",
-      description:"Daga estándar." },
-    { id:"itm-9", kind:"item", name:"Studded Leather", tags:["Objeto","Armadura"], formula:"CA base 12", short:"Armadura ligera",
-      description:"Armadura de cuero tachonado." },
-    { id:"itm-10", kind:"item", name:"Alchemy Jug (plano)", tags:["Infusión","Plano"], formula:"—", short:"Producción de líquidos",
-      description:"Plano conocido para Replicar Objeto." },
-    { id:"itm-11", kind:"item", name:"Returning Weapon (plano)", tags:["Infusión","Plano"], formula:"+1 arma arrojadiza", short:"Regresa al lanzador",
-      description:"Plano conocido. Arma arrojadiza +1 que regresa." },
-    { id:"itm-12", kind:"item", name:"Sending Stones (plano)", tags:["Infusión","Plano"], formula:"—", short:"Comunicación a distancia",
-      description:"Plano conocido. Comunicación a distancia." },
+    { id:"itm-8", kind:"item", name:"Daga", tags:["Objeto","Arma"], formula:"1d4 perforante", short:"Sutil · Ligera · Arrojadiza 20/60", description:"Daga estándar." },
+    { id:"itm-9", kind:"item", name:"Studded Leather", tags:["Objeto","Armadura"], formula:"CA base 12", short:"Armadura ligera", description:"Armadura de cuero tachonado." },
+    { id:"itm-10", kind:"item", name:"Alchemy Jug (plano)", tags:["Infusión","Plano"], formula:"—", short:"Producción de líquidos", description:"Plano conocido para Replicar Objeto." },
+    { id:"itm-11", kind:"item", name:"Returning Weapon (plano)", tags:["Infusión","Plano"], formula:"+1 arma arrojadiza", short:"Regresa al lanzador", description:"Plano conocido. Arma arrojadiza +1 que regresa." },
+    { id:"itm-12", kind:"item", name:"Sending Stones (plano)", tags:["Infusión","Plano"], formula:"—", short:"Comunicación a distancia", description:"Plano conocido. Comunicación a distancia." },
     { id:"itm-13", kind:"item", name:"Wand of the War Mage +1 (plano)", tags:["Infusión","Plano","Attunement"], formula:"+1 ataques de conjuro", short:"Attunement (spellcaster)",
       description:"Plano conocido. Requiere Attunement. +1 a spell attack rolls → Fire Bolt / Ray of Sickness: +6 → +7. NO aumenta la CD 14." }
   ],
@@ -790,53 +577,49 @@ const DEFAULT_CHAR = {
   notes:""
 };
 
+const NPC_TEMPLATE = {
+  id: null, type: "npc", campaign: "",
+  meta:{ name:"PNJ nuevo", class:"Monstruo", level:1, race:"Humanoide", background:"", alignment:"Neutral" },
+  portrait:"", wallpaper:"", icon:"👹",
+  combat:{ hp:{current:7,max:7,temp:0}, ac:13, initiativeMisc:0, speed:30, hitDice:{current:1,max:1,die:"d6"}, deathSaves:{s:0,f:0}, inspiration:false, exhaustion:0, conditions:[] },
+  stats:{ str:10, dex:10, con:10, int:10, wis:10, cha:10 },
+  profBonus:2, saveProfs:[], skillProfs:[], skillExpertise:[],
+  spellSlots:{ 1:{max:0, used:0} },
+  entries:[{ id:"npc-atk-1", kind:"attack", name:"Ataque", tags:["Ataque"], formula:"1d20+2 · 1d6", short:"Cuerpo a cuerpo",
+    description:"Ataque básico." }],
+  gold:{ pp:0, gp:0, sp:0, cp:0 }, notes:""
+};
+
 /* ============================================================
    CONSTANTES
    ============================================================ */
 const SKILLS = {
-  acrobatics:{name:"Acrobacias",stat:"dex"},
-  animalHandling:{name:"Trato con animales",stat:"wis"},
-  arcana:{name:"Arcanos",stat:"int"},
-  athletics:{name:"Atletismo",stat:"str"},
-  deception:{name:"Engaño",stat:"cha"},
-  history:{name:"Historia",stat:"int"},
-  insight:{name:"Perspicacia",stat:"wis"},
-  intimidation:{name:"Intimidación",stat:"cha"},
-  investigation:{name:"Investigación",stat:"int"},
-  medicine:{name:"Medicina",stat:"wis"},
-  nature:{name:"Naturaleza",stat:"int"},
-  perception:{name:"Percepción",stat:"wis"},
-  performance:{name:"Interpretación",stat:"cha"},
-  persuasion:{name:"Persuasión",stat:"cha"},
-  religion:{name:"Religión",stat:"int"},
-  sleightOfHand:{name:"Juego de manos",stat:"dex"},
-  stealth:{name:"Sigilo",stat:"dex"},
-  survival:{name:"Supervivencia",stat:"wis"}
+  acrobatics:{name:"Acrobacias",stat:"dex"}, animalHandling:{name:"Trato con animales",stat:"wis"},
+  arcana:{name:"Arcanos",stat:"int"}, athletics:{name:"Atletismo",stat:"str"},
+  deception:{name:"Engaño",stat:"cha"}, history:{name:"Historia",stat:"int"},
+  insight:{name:"Perspicacia",stat:"wis"}, intimidation:{name:"Intimidación",stat:"cha"},
+  investigation:{name:"Investigación",stat:"int"}, medicine:{name:"Medicina",stat:"wis"},
+  nature:{name:"Naturaleza",stat:"int"}, perception:{name:"Percepción",stat:"wis"},
+  performance:{name:"Interpretación",stat:"cha"}, persuasion:{name:"Persuasión",stat:"cha"},
+  religion:{name:"Religión",stat:"int"}, sleightOfHand:{name:"Juego de manos",stat:"dex"},
+  stealth:{name:"Sigilo",stat:"dex"}, survival:{name:"Supervivencia",stat:"wis"}
 };
 const STAT_NAMES = {str:"FUE",dex:"DES",con:"CON",int:"INT",wis:"SAB",cha:"CAR"};
-const KIND_LABELS = {
-  reaction:"Reacciones", bonus:"Acciones adicionales", action:"Acciones",
-  attack:"Ataques", cantrip:"Trucos", spell:"Conjuros preparados", item:"Objetos"
-};
-const KIND_SHORT = {
-  reaction:"Reac", bonus:"Bonus", action:"Acción",
-  attack:"Ataq", cantrip:"Truco", spell:"Conjuro", item:"Objeto"
-};
+const KIND_LABELS = { reaction:"Reacciones", bonus:"Acciones adicionales", action:"Acciones", attack:"Ataques", cantrip:"Trucos", spell:"Conjuros preparados", item:"Objetos" };
+const KIND_SHORT = { reaction:"Reac", bonus:"Bonus", action:"Acción", attack:"Ataq", cantrip:"Truco", spell:"Conjuro", item:"Objeto" };
 const KIND_ORDER = ["reaction","bonus","action","attack","cantrip","spell","item"];
 const RESTORE_LABELS = { short:"Corto", long:"Largo", dawn:"Amanecer", never:"Manual" };
 
 /* ============================================================
-   ESTADO
+   ESTADO / DB
    ============================================================ */
-let C = loadChar();
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+
+let DB = loadDB();
+let C = DB.characters.find(c => c.id === DB.activeId) || DB.characters[0];
 let UI = { activeDetail:null, pinnedDetails:[], panelOpen:null, editingId:null, rightFilter:null };
 
 function clone(o){return JSON.parse(JSON.stringify(o))}
-function loadChar(){
-  try{ const raw = localStorage.getItem(STORAGE_KEY); if(raw) return deepMerge(clone(DEFAULT_CHAR), JSON.parse(raw)); }catch(e){}
-  return clone(DEFAULT_CHAR);
-}
-function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(C)); }catch(e){} }
 function deepMerge(t,s){
   for(const k in s){
     if(s[k] && typeof s[k]==="object" && !Array.isArray(s[k])) t[k] = deepMerge(t[k]||{}, s[k]);
@@ -844,10 +627,46 @@ function deepMerge(t,s){
   }
   return t;
 }
+function makePC(){
+  const c = clone(DEFAULT_CHAR);
+  c.id = uid(); c.type = "pc"; c.campaign = "";
+  return c;
+}
+function makeNPC(){
+  const c = clone(NPC_TEMPLATE);
+  c.id = uid(); c.type = "npc";
+  return c;
+}
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const db = JSON.parse(raw);
+      if(db && Array.isArray(db.characters) && db.characters.length) return db;
+    }
+    // Migrar desde v5 (un solo personaje)
+    const old = localStorage.getItem(OLD_KEY);
+    if(old){
+      const c = deepMerge(clone(DEFAULT_CHAR), JSON.parse(old));
+      c.id = uid(); c.type = "pc"; c.campaign = c.campaign || "";
+      return { characters:[c], activeId:c.id };
+    }
+  }catch(e){ console.warn(e); }
+  const c = makePC();
+  return { characters:[c], activeId:c.id };
+}
+function save(){
+  try{
+    const i = DB.characters.findIndex(c => c.id === C.id);
+    if(i >= 0) DB.characters[i] = C;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+  }catch(e){ console.warn("No se pudo guardar", e); }
+}
+function activeChar(){ return DB.characters.find(c => c.id === DB.activeId) || DB.characters[0]; }
+
 const mod = n => Math.floor((n-10)/2);
 const fmt = n => (n>=0?"+":"")+n;
 const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 
 function toast(msg){
   const t = document.getElementById("toast");
@@ -867,10 +686,10 @@ function applyWallpaper(){
 function applyPortrait(){
   const p = document.getElementById("portrait");
   if(C.portrait){ p.style.backgroundImage = `url("${C.portrait}")`; p.textContent = ""; }
-  else { p.style.backgroundImage = ""; p.textContent = "🛡️"; }
+  else { p.style.backgroundImage = ""; p.textContent = C.type === "npc" ? "👹" : "🛡️"; }
 }
 function applyFavicon(){
-  const emoji = C.icon || "🎲";
+  const emoji = C.icon || (C.type === "npc" ? "👹" : "🎲");
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`;
   let link = document.querySelector("link[rel='icon']");
   if(!link){ link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
@@ -883,6 +702,9 @@ function applyFavicon(){
 function renderHeader(){
   document.getElementById("hName").textContent = C.meta.name || "Sin nombre";
   document.getElementById("hSub").textContent = [C.meta.race, `${C.meta.class} ${C.meta.level}`, C.meta.alignment].filter(Boolean).join(" · ");
+  const camp = document.getElementById("hCamp");
+  camp.textContent = C.campaign ? `🏰 ${C.campaign}` : "";
+  camp.style.display = C.campaign ? "block" : "none";
 }
 
 function renderVitals(){
@@ -939,10 +761,8 @@ function renderRight(){
 
   const isCompact = document.getElementById("rightPanel").classList.contains("compact");
   const filter = UI.rightFilter;
-
   let html = "";
 
-  // Si hay filtro, botón para volver a "todas"
   if(filter && !isCompact){
     html += `<button class="filter-back" data-action="clear-filter">← Ver todas las secciones</button>`;
   }
@@ -964,7 +784,6 @@ function renderRight(){
       </div>`;
     }
   }
-
   html += `<button class="new-entry-btn" data-action="open-entry-form">+ Nueva entrada</button>`;
   el.innerHTML = html;
 }
@@ -1093,9 +912,7 @@ function renderDetailHTML(e, pinned){
     </div>
     ${tags||restoreTag ? `<div class="tag-row">${tags}${restoreTag}</div>` : ""}
     ${e.formula ? `<div class="formula-box">${esc(e.formula)}</div>` : ""}
-    ${slotBlock}
-    ${usesBlock}
-    ${metaHTML}
+    ${slotBlock}${usesBlock}${metaHTML}
     ${e.description ? `<div class="detail-desc">${esc(e.description)}</div>` : ""}
   </div>`;
 }
@@ -1135,27 +952,17 @@ function togglePanel(side){
     const layout = document.querySelector(".layout");
     const aside = document.getElementById(side === "left" ? "leftPanel" : "rightPanel");
     const layoutCls = side === "left" ? "left-compact" : "right-compact";
-
     if(aside.classList.contains("compact")){
-      // Expandir
       aside.classList.remove("compact");
       layout.classList.remove(layoutCls);
-      if(side === "right" && UI.rightFilter){
-        UI.rightFilter = null;
-        renderRight();
-      }
+      if(side === "right" && UI.rightFilter){ UI.rightFilter = null; renderRight(); }
     } else {
-      // Compactar
       aside.classList.add("compact");
       layout.classList.add(layoutCls);
-      if(side === "right" && UI.rightFilter){
-        UI.rightFilter = null;
-        renderRight();
-      }
+      if(side === "right" && UI.rightFilter){ UI.rightFilter = null; renderRight(); }
     }
     return;
   }
-  // Móvil: deslizar
   const el = document.getElementById(side === "left" ? "leftPanel" : "rightPanel");
   const other = document.getElementById(side === "left" ? "rightPanel" : "leftPanel");
   const backdrop = document.getElementById("backdrop");
@@ -1168,7 +975,6 @@ function togglePanel(side){
     backdrop.classList.add("show"); UI.panelOpen = side;
   }
 }
-
 function closePanels(){
   document.getElementById("leftPanel").className = "closed";
   document.getElementById("rightPanel").className = "closed";
@@ -1195,27 +1001,19 @@ function closeDetail(id){
   if(UI.activeDetail === id) UI.activeDetail = null;
   renderDetailStack();
 }
-
 function clickSection(kind){
   const aside = document.getElementById("rightPanel");
   const layout = document.querySelector(".layout");
-
   if(window.innerWidth >= 900 && aside.classList.contains("compact")){
-    // Estaba compacto → expandir + filtrar
     aside.classList.remove("compact");
     layout.classList.remove("right-compact");
     UI.rightFilter = kind;
   } else {
-    // Ya expandido → toggle filtro
     UI.rightFilter = (UI.rightFilter === kind) ? null : kind;
   }
   renderRight();
 }
-
-function clearFilter(){
-  UI.rightFilter = null;
-  renderRight();
-}
+function clearFilter(){ UI.rightFilter = null; renderRight(); }
 
 function toggleSlot(level, idx){
   const s = C.spellSlots[level];
@@ -1229,7 +1027,6 @@ function toggleUse(id, idx){
   e.uses.current = (idx < e.uses.current) ? idx : idx + 1;
   save(); renderDetailStack(); renderQuickBar();
 }
-
 function useSlot(id, level){
   const pool = C.spellSlots[level];
   if(!pool) return;
@@ -1257,12 +1054,11 @@ function shortRest(){
     if(e.uses && e.restore === "short" && e.uses.current < e.uses.max){ e.uses.current = e.uses.max; restored++; }
   }
   save(); renderAll();
-  toast(restored ? `☕ Descanso corto — ${restored} recurso(s) restaurado(s)` : "☕ Descanso corto");
+  toast(restored ? `☕ Descanso corto — ${restored} recurso(s)` : "☕ Descanso corto");
 }
 function longRest(){
   const c = C.combat;
-  c.hp.current = c.hp.max;
-  c.hp.temp = 0;
+  c.hp.current = c.hp.max; c.hp.temp = 0;
   c.deathSaves = { s:0, f:0 };
   c.exhaustion = Math.max(0, c.exhaustion - 1);
   c.hitDice.current = Math.min(c.hitDice.max, c.hitDice.current + Math.ceil(c.hitDice.max/2));
@@ -1276,7 +1072,109 @@ function longRest(){
 }
 
 /* ============================================================
-   FORMULARIO
+   PERSONAJES
+   ============================================================ */
+function openChars(){
+  renderCharList();
+  document.getElementById("charsModal").classList.add("open");
+}
+function closeChars(){ document.getElementById("charsModal").classList.remove("open"); }
+
+function renderCharList(){
+  const el = document.getElementById("charList");
+  // Agrupar por campaña
+  const groups = {};
+  for(const c of DB.characters){
+    const key = c.campaign && c.campaign.trim() ? c.campaign.trim() : "(Sin campaña)";
+    if(!groups[key]) groups[key] = [];
+    groups[key].push(c);
+  }
+  // Ordenar: primera "Sin campaña"? No, mejor alfabético con "(Sin campaña)" al final
+  const keys = Object.keys(groups).sort((a,b) => {
+    if(a === "(Sin campaña)") return 1;
+    if(b === "(Sin campaña)") return -1;
+    return a.localeCompare(b);
+  });
+
+  let html = "";
+  for(const key of keys){
+    html += `<div class="char-group-label">🏰 ${esc(key)}</div>`;
+    for(const c of groups[key]){
+      const active = c.id === C.id;
+      const hp = c.combat.hp;
+      html += `<button class="char-item ${active?'active':''}" data-action="switch-to" data-id="${c.id}">
+        <span class="ci-type ${c.type}">${c.type === "pc" ? "PJ" : "PNJ"}</span>
+        <div class="ci-info">
+          <div class="ci-name">${esc(c.meta.name)}</div>
+          <div class="ci-sub">${esc(c.meta.class)} · Nv ${c.meta.level}</div>
+        </div>
+        <span class="ci-hp">${hp.current}/${hp.max}</span>
+      </button>`;
+    }
+  }
+  if(!html) html = `<div class="empty">Sin personajes.</div>`;
+  el.innerHTML = html;
+}
+
+function switchTo(id){
+  if(id === C.id){ closeChars(); return; }
+  save();
+  DB.activeId = id;
+  C = activeChar();
+  UI.activeDetail = null;
+  UI.pinnedDetails = [];
+  UI.rightFilter = null;
+  save();
+  renderAll();
+  closeChars();
+  toast(`▶ ${C.meta.name}`);
+}
+
+function newChar(type){
+  save();
+  const c = type === "npc" ? makeNPC() : makePC();
+  if(type === "pc") c.meta.name = "Nuevo PJ";
+  // Heredar campaña del actual
+  c.campaign = C.campaign || "";
+  DB.characters.push(c);
+  DB.activeId = c.id;
+  C = c;
+  UI.activeDetail = null;
+  UI.pinnedDetails = [];
+  save();
+  renderAll();
+  closeChars();
+  toast(`+ ${c.meta.name}`);
+  setTimeout(()=>{ openSettings(); setTimeout(()=>document.getElementById("setCampaign").focus(), 200); }, 250);
+}
+
+function duplicateChar(){
+  save();
+  const copy = clone(C);
+  copy.id = uid();
+  copy.meta.name = (C.meta.name || "Personaje") + " (copia)";
+  DB.characters.push(copy);
+  DB.activeId = copy.id;
+  C = copy;
+  save(); renderAll(); closeChars();
+  toast("Duplicado ✓");
+}
+
+function deleteChar(){
+  if(DB.characters.length <= 1){ alert("Debe quedar al menos un personaje."); return; }
+  if(!confirm(`¿Eliminar a "${C.meta.name}"?`)) return;
+  const i = DB.characters.findIndex(c => c.id === C.id);
+  DB.characters.splice(i,1);
+  DB.activeId = DB.characters[0].id;
+  C = DB.characters[0];
+  UI.activeDetail = null;
+  UI.pinnedDetails = [];
+  save(); renderAll(); closeChars();
+  toast("Eliminado");
+}
+
+/* ============================================================
+   FORMULARIO DE ENTRADAS
    ============================================================ */
 function openEntryForm(id){
   UI.editingId = id || null;
@@ -1331,20 +1229,15 @@ function saveEntryForm(){
     if(!entry) return;
     const oldCurrent = entry.uses ? entry.uses.current : 0;
     const oldMax = entry.uses ? entry.uses.max : 0;
-    entry.kind = kind;
-    entry.name = name;
-    entry.tags = tags;
-    entry.formula = formula;
-    entry.short = short;
-    entry.description = description;
+    entry.kind = kind; entry.name = name; entry.tags = tags;
+    entry.formula = formula; entry.short = short; entry.description = description;
     entry.level = level;
     if(usesMax > 0){
       const newCurrent = (oldMax === usesMax) ? oldCurrent : usesMax;
       entry.uses = { current: newCurrent, max: usesMax };
       entry.restore = restore || "long";
     } else {
-      delete entry.uses;
-      delete entry.restore;
+      delete entry.uses; delete entry.restore;
     }
     toast("Entrada actualizada ✓");
   } else {
@@ -1374,9 +1267,10 @@ function deleteEntry(){
    SETTINGS
    ============================================================ */
 function openSettings(){
+  document.getElementById("setCampaign").value = C.campaign || "";
   document.getElementById("setPortrait").value = C.portrait || "";
   document.getElementById("setWallpaper").value = C.wallpaper || "";
-  document.getElementById("setIcon").value = C.icon || "🧪";
+  document.getElementById("setIcon").value = C.icon || "";
   document.getElementById("jsonArea").value = JSON.stringify(C, null, 2);
   document.getElementById("settingsModal").classList.add("open");
 }
@@ -1384,7 +1278,9 @@ function closeSettings(){ document.getElementById("settingsModal").classList.rem
 function applyJSON(){
   try{
     const parsed = JSON.parse(document.getElementById("jsonArea").value);
-    C = deepMerge(clone(DEFAULT_CHAR), parsed);
+    const id = C.id, type = C.type, campaign = C.campaign;
+    C = deepMerge(clone(type === "npc" ? NPC_TEMPLATE : DEFAULT_CHAR), parsed);
+    C.id = id; C.type = type; C.campaign = parsed.campaign !== undefined ? parsed.campaign : campaign;
     save(); renderAll(); closeSettings();
     toast("Datos actualizados ✓");
   }catch(e){ alert("JSON inválido:\n" + e.message); }
@@ -1402,8 +1298,10 @@ function downloadJSON(){
   a.click(); URL.revokeObjectURL(url);
 }
 function resetChar(){
-  if(!confirm("¿Restaurar el personaje al ejemplo? Se perderán los cambios.")) return;
-  C = clone(DEFAULT_CHAR);
+  if(!confirm("¿Restaurar este personaje al ejemplo? Se perderán los cambios.")) return;
+  const id = C.id, type = C.type, campaign = C.campaign;
+  C = type === "npc" ? clone(NPC_TEMPLATE) : clone(DEFAULT_CHAR);
+  C.id = id; C.type = type; C.campaign = campaign;
   save(); renderAll(); closeSettings();
   toast("Restaurado");
 }
@@ -1452,6 +1350,14 @@ document.body.addEventListener("click", e => {
     case "close-entry-form": closeEntryForm(); break;
     case "save-entry": saveEntryForm(); break;
     case "delete-entry": deleteEntry(); break;
+
+    case "open-chars": openChars(); break;
+    case "close-chars": closeChars(); break;
+    case "switch-to": switchTo(t.dataset.id); break;
+    case "new-pc": newChar("pc"); break;
+    case "new-npc": newChar("npc"); break;
+    case "duplicate-char": duplicateChar(); break;
+    case "delete-char": deleteChar(); break;
   }
 });
 
@@ -1474,9 +1380,10 @@ document.getElementById("backdrop").addEventListener("click", closePanels);
   el.addEventListener("blur", () => { if(el.value === "") el.dispatchEvent(new Event("change")); });
 });
 
+document.getElementById("setCampaign").addEventListener("change", e => { C.campaign = e.target.value.trim(); save(); renderHeader(); });
 document.getElementById("setPortrait").addEventListener("change", e => { C.portrait = e.target.value.trim(); save(); applyPortrait(); });
 document.getElementById("setWallpaper").addEventListener("change", e => { C.wallpaper = e.target.value.trim(); save(); applyWallpaper(); });
-document.getElementById("setIcon").addEventListener("change", e => { C.icon = e.target.value.trim() || "🎲"; save(); applyFavicon(); });
+document.getElementById("setIcon").addEventListener("change", e => { C.icon = e.target.value.trim(); save(); applyFavicon(); });
 document.getElementById("filePortrait").addEventListener("change", e => {
   const f = e.target.files[0]; if(!f) return;
   const r = new FileReader();
@@ -1495,7 +1402,9 @@ document.getElementById("fileImport").addEventListener("change", e => {
   r.onload = ev => {
     try{
       const parsed = JSON.parse(ev.target.result);
-      C = deepMerge(clone(DEFAULT_CHAR), parsed);
+      const id = C.id, type = C.type, campaign = C.campaign;
+      C = deepMerge(clone(type === "npc" ? NPC_TEMPLATE : DEFAULT_CHAR), parsed);
+      C.id = id; C.type = type; C.campaign = parsed.campaign || campaign;
       save(); renderAll(); closeSettings();
       toast("Importado ✓");
     }catch(err){ alert("JSON inválido:\n" + err.message); }
@@ -1510,6 +1419,9 @@ document.querySelectorAll(".modal").forEach(m => {
 /* ============================================================
    INIT
    ============================================================ */
+if(!DB.characters.length){ const pc = makePC(); DB.characters = [pc]; DB.activeId = pc.id; }
+if(!DB.characters.find(c => c.id === DB.activeId)) DB.activeId = DB.characters[0].id;
+C = activeChar();
 renderAll();
 </script>
 </body>
