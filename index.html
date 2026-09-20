@@ -73,9 +73,16 @@ header{
 .icon-btn:active{transform:scale(.92);background:rgba(232,185,58,.25)}
 
 /* LAYOUT */
-.layout{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1500px;margin:0 auto;min-height:calc(100vh - 50px)}
 @media(min-width:900px){
-  .layout{grid-template-columns:300px 1fr 320px;align-items:start}
+  .layout{
+    grid-template-columns: var(--left-w, 300px) 1fr var(--right-w, 320px);
+    align-items:start;
+    transition: grid-template-columns .25s ease;
+  }
+  .layout.hide-left{ --left-w: 0px; }
+  .layout.hide-right{ --right-w: 0px; }
+  .layout.hide-left #leftPanel,
+  .layout.hide-right #rightPanel{ display:none; }
 }
 
 /* SIDE PANELS */
@@ -983,6 +990,13 @@ function renderAll(){
    PANELES
    ============================================================ */
 function togglePanel(side){
+  // En escritorio: ocultar/mostrar la columna
+  if(window.innerWidth >= 900){
+    const layout = document.querySelector(".layout");
+    layout.classList.toggle(side === "left" ? "hide-left" : "hide-right");
+    return;
+  }
+  // En móvil: deslizar
   const el = document.getElementById(side === "left" ? "leftPanel" : "rightPanel");
   const other = document.getElementById(side === "left" ? "rightPanel" : "leftPanel");
   const backdrop = document.getElementById("backdrop");
